@@ -22,17 +22,22 @@ class Player(pygame.sprite.Sprite):
 
         if top:
             self.loc_y-=self.hv
+            self.rect.center = (self.loc_x, self.loc_y)
         if down:
             self.loc_y+=self.hv
+            self.rect.center = (self.loc_x, self.loc_y)
         if left:
             self.loc_x-=self.vv
+            self.rect.center = (self.loc_x, self.loc_y)
         if right:
             self.loc_x+=self.vv
+            self.rect.center = (self.loc_x, self.loc_y)
 
         '''if self.rect.top>size_y or self.rect.bottom<0 or self.rect.left>size_x or self.rect.right<0:
             self.kill()'''
 
     def draw(self, win_surf):
+        print("draw")
         pygame.draw.rect(win_surf, (0,0,0), self.rect)
 
 
