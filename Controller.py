@@ -1,6 +1,5 @@
 import pygame.gfxdraw
 import Maze
-import pygame.time
 import random
 import Character
 import pygame
