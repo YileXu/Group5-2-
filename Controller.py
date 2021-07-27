@@ -11,8 +11,8 @@ def main():
     WindowSize_y = 620
     surface = pygame.display.set_mode([WindowSize_x,WindowSize_y])
     pygame.display.set_caption('Catch FLAG')
-    background = pygame.image.load('ground.jpg').convert()
-    image_surf = pygame.image.load('mario_sprites.png').convert()
+    background = pygame.image.load(r'F:\cis\3\ground.jpg').convert()
+    image_surf = pygame.image.load(r'F:\cis\3\mario_sprites.png').convert()
     surface.blit(background,(0,0))
 
 
@@ -27,38 +27,55 @@ def main():
     g = Maze.Grid(19, 32)
     while running:
         clock.tick(60)
+        left = False
+        top = False
+        right = False
+        down = False
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-            if event.type == pygame.KEYUP:
+            if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     running = False
-                elif event.key == K_q:  # Quit
+                if event.key == K_q:  # Quit
                     running = False
-                elif event.key == K_n:  # New
+                if event.key == K_n:  # New
                     g = Maze.Grid(19, 32)
                     markup = None
-                elif event.key == K_a:  # Aldous-Broder random walk
-                    Maze.aldous_broder(g)
+                if event.key == K_w:
+                    Maze.wilson(g)
                     markup = None
-                elif event.key == K_LEFT:
-                    player_zero= Character.Player(image_surf)
-                    player_zero.move_left = True
-                elif event.key == K_RIGHT:
-                    player_zero = Character.Player(image_surf)
-                    player_zero.move_right = True
-                elif event.key == K_UP:
-                    player_zero = Character.Player(image_surf)
-                    player_zero.move_up = True
-                elif event.key == K_DOWN:
-                    player_zero = Character.Player(image_surf)
-                    player_zero.move_down = True
+                if event.key == K_UP:
+                    top = True
+                if event.key == K_LEFT:
+                    left = True
+                if event.key == K_DOWN:
+                    down = True
+                if event.key == K_RIGHT:
+                    right = True
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_LEFT:
+                    left = False
+                if event.key == pygame.K_RIGHT:
+                    right = False
+                if event.key == pygame.K_UP:
+                    top = False
+                if event.key == pygame.K_DOWN:
+                    down = False
+        if left and right:
+            left = False
+            right = False
+
+        if top and down:
+            top = False
+            down = False
         surface.blit(background, (0, 0))
         display_grid(g, markup, surface)
-
-        player_group.draw(surface)  #draw rect
-        player_group.update(WindowSize_x, WindowSize_y)
+        player_group.update(WindowSize_x, WindowSize_y, top, down, right, left)
+        player_group.draw(surface)
         pygame.display.flip()
+
+
 
 
 def display_grid(g, markup, screen):

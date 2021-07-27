@@ -417,7 +417,8 @@ def sidewinder(grid, odds=.5):
             a=random.random()
             if a < odds:
                 if start_cell.north:
-                    chosen_cell = random.choice(list)
+                    rand = random.randrange(len(list))
+                    chosen_cell = list[rand]
                     chosen_cell.link(chosen_cell.north)
                 list.clear()
                 continue
