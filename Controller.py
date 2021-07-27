@@ -11,8 +11,8 @@ def main():
     WindowSize_y = 620
     surface = pygame.display.set_mode([WindowSize_x,WindowSize_y])
     pygame.display.set_caption('Catch FLAG')
-    background = pygame.image.load(r'F:\cis\3\ground.jpg').convert()
-    image_surf = pygame.image.load(r'F:\cis\4\code\mario_sprites.png').convert()
+    background = pygame.image.load('ground.jpg').convert()
+    image_surf = pygame.image.load('mario_sprites.png').convert()
     surface.blit(background,(0,0))
 
 
