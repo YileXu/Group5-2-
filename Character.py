@@ -1,14 +1,14 @@
 import pygame
 import random
 class Player(pygame.sprite.Sprite):
-    def __init__(self, cha_surf):
+    def __init__(self, cha_surf, loc_x=720, loc_y=360):
         pygame.sprite.Sprite.__init__(self)
         '''self.move_left = False
         self.move_right = False
         self.move_up = False
         self.move_down = False'''
-        self.loc_x = 720
-        self.loc_y = 360
+        self.loc_x = loc_x
+        self.loc_y = loc_y
         self.hv = 10
         self.vv = 10
         self.image = pygame.Surface((30, 60))
