@@ -342,6 +342,34 @@ class ColorizedMarkup(Markup):
                 self.marks[c] = [dark, bright, dark]
             else:
                 self.marks[c] = [dark, dark, bright]   
+
+class FlagAndPlayersMarkup(Markup):
+    ''' Markup a maze with Flag and Players Positions
+    '''
+    def __init__(self, grid, flag_marker='f', player_marker='p', non_marker=' '):
+        super().__init__(grid)
+        flag = grid.random_cell()
+        dm = DijkstraMarkup(self.grid, flag)
+        max_mark = dm.farthest_cell()[1]
+        possible_marks = []
+        for mark in range(1, max_mark+1):
+            possible_marks.append(mark)
+        possible_player = []
+        while len(possible_player) < 2:
+            possible_player = []
+            rand_dist = possible_marks.pop(random.randint(0, len(possible_marks)-1))
+            for cell in dm.marks:
+                if dm.marks[cell] == rand_dist:
+                    possible_player.append(cell)
+        player0 = possible_player.pop(random.randint(0, len(possible_player)-1))
+        player1 = possible_player.pop(random.randint(0, len(possible_player)-1))
+        for c in range(self.grid.num_columns):
+            for r in range(self.grid.num_rows):
+                dm.marks[self.grid.grid[r][c]] = non_marker
+        dm.marks[flag] = flag_marker
+        dm.marks[player0] = player_marker
+        dm.marks[player1] = player_marker
+        self.marks = dm.marks
                                        
 def binary_tree(grid):
     ''' The Binary Tree Algorithm.
