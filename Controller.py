@@ -13,21 +13,32 @@ def main():
     pygame.display.set_caption('Catch FLAG')
     background = pygame.image.load('ground.jpg').convert()
     image_surf = pygame.image.load('mario_sprites.png').convert()
+    player_zero_sprite = pygame.image.load('sprites/players/Mario.png').convert()
+    player_one_sprite = pygame.image.load('sprites/players/Luigi.png').convert()
+    player_zero_sprite = pygame.transform.scale(player_zero_sprite, (int(player_zero_sprite.get_size()[0]/4), int(player_zero_sprite.get_size()[1]/4)))
+    player_one_sprite = pygame.transform.scale(player_one_sprite, (int(player_one_sprite.get_size()[0]/4), int(player_one_sprite.get_size()[1]/4)))
     surface.blit(background,(0,0))
 
-
     player_group = pygame.sprite.Group()
-    player_zero = Character.Player(image_surf)
-    player_one = Character.Player(image_surf)
+    player_zero = Character.Player(player_zero_sprite)
+    player_one = Character.Player(player_one_sprite)
     player_group.add(player_zero)
     player_group.add(player_one)
 
-
     clock= pygame.time.Clock()
     running = True
-    markup = None
-    g = Maze.Grid(19, 24)
-    Maze.wilson(g)
+    
+    g = Maze.Grid(18, 24)
+    Maze.aldous_broder(g)
+    markup = Maze.FlagAndPlayersMarkup(g)
+    surface.blit(background, (0, 0))
+    display_grid(g, markup, surface, player_zero, player_one)
+    player_group.clear(surface, background)
+    player_zero.rectChange()
+    player_one.rectChange()
+    player_group.draw(surface)
+    print(player_zero.loc_x, player_zero.loc_y)
+    pygame.display.flip()
     while running:
         clock.tick(60)
         left = False
@@ -94,18 +105,15 @@ def main():
         if top1 and down1:
             top1 = False
             down1 = False
-
-        surface.blit(background, (0, 0))
-        display_grid(g, markup, surface)
+        
+        player_group.clear(surface, background)
         player_zero.update(g, top, down, right, left)
         player_one.update(g, top1, down1, right1, left1)
         player_group.draw(surface)
         pygame.display.flip()
 
 
-
-
-def display_grid(g, markup, screen):
+def display_grid(g, markup, screen, player_zero, player_one):
     for row in range(g.num_rows):
         for col in range(g.num_columns):
             c = g.cell_at(row, col)
@@ -123,6 +131,26 @@ def display_grid(g, markup, screen):
                                        (cell_x + 15, cell_y + 15),
                                        7,  # radius
                                        0)  # filled
+                if value == 'f':  # Flag
+                    pygame.draw.circle(screen,
+                                       (255,50,50),
+                                       (cell_x+15,cell_y+15),
+                                       7,  #radius
+                                       0)  #filled
+                if value == 'p0':  # Player
+                    pygame.draw.circle(screen,
+                                       (50,255,50),
+                                       (cell_x+15,cell_y+15),
+                                       7,  #radius
+                                       0)  #filled
+                    player_zero.directMoveViaLoc(cell_x+16.5, cell_y+16.5)
+                if value == 'p1':  # Player
+                    pygame.draw.circle(screen,
+                                       (50,50,255),
+                                       (cell_x+15,cell_y+15),
+                                       7,  #radius
+                                       0)  #filled
+                    player_one.directMoveViaLoc(cell_x+16.5, cell_y+16.5)
                 if isinstance(value, list) and len(value) == 3:
                     pygame.draw.rect(screen,
                                      value,  # color

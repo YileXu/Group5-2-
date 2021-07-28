@@ -346,7 +346,7 @@ class ColorizedMarkup(Markup):
 class FlagAndPlayersMarkup(Markup):
     ''' Markup a maze with Flag and Players Positions
     '''
-    def __init__(self, grid, flag_marker='f', player_marker='p', non_marker=' '):
+    def __init__(self, grid, flag_marker='f', player0_marker='p0', player1_marker='p1', non_marker=' '):
         super().__init__(grid)
         flag = grid.random_cell()
         dm = DijkstraMarkup(self.grid, flag)
@@ -367,8 +367,8 @@ class FlagAndPlayersMarkup(Markup):
             for r in range(self.grid.num_rows):
                 dm.marks[self.grid.grid[r][c]] = non_marker
         dm.marks[flag] = flag_marker
-        dm.marks[player0] = player_marker
-        dm.marks[player1] = player_marker
+        dm.marks[player0] = player0_marker
+        dm.marks[player1] = player1_marker
         self.marks = dm.marks
                                        
 def binary_tree(grid):
