@@ -7,8 +7,8 @@ class Player(pygame.sprite.Sprite):
         self.move_right = False
         self.move_up = False
         self.move_down = False'''
-        self.loc_x = 720
-        self.loc_y = 360
+        self.loc_x = random.randrange(50,1000)
+        self.loc_y = random.randrange(50,500)
         self.hv = 10
         self.vv = 10
         self.image = pygame.Surface((30, 60))
@@ -22,12 +22,16 @@ class Player(pygame.sprite.Sprite):
 
         if top:
             self.loc_y-=self.hv
+            self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
         if down:
             self.loc_y+=self.hv
+            self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
         if left:
             self.loc_x-=self.vv
+            self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
         if right:
             self.loc_x+=self.vv
+            self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 
         '''if self.rect.top>size_y or self.rect.bottom<0 or self.rect.left>size_x or self.rect.right<0:
             self.kill()'''
