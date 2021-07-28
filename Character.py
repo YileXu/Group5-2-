@@ -11,9 +11,9 @@ class Player(pygame.sprite.Sprite):
         self.loc_y = random.randrange(50,500)
         self.hv = 10
         self.vv = 10
-        self.image = pygame.Surface((30, 80))
+        self.image = pygame.Surface((30, 20))
         self.image.set_colorkey((255, 255, 255))
-        self.image.blit(cha_surf, (-5, -10), (0, 0, 450, 130))
+        self.image.blit(cha_surf, (-5, -10), (0, 0, 20, 10))
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 
 
@@ -33,10 +33,12 @@ class Player(pygame.sprite.Sprite):
             self.loc_x+=self.vv
             self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 
-        '''if self.rect.top>size_y or self.rect.bottom<0 or self.rect.left>size_x or self.rect.right<0:
-            self.kill()'''
+
+
+
 
     def draw(self, win_surf):
+        print("draw")
         pygame.draw.rect(win_surf, (0,0,0), self.rect)
 
 
