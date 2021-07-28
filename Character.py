@@ -1,19 +1,20 @@
 import pygame
 import random
 class Player(pygame.sprite.Sprite):
-    def __init__(self, cha_surf):
+    def __init__(self, cha_surf, loc_x=720, loc_y=360):
         pygame.sprite.Sprite.__init__(self)
         '''self.move_left = False
         self.move_right = False
         self.move_up = False
         self.move_down = False'''
-        self.loc_x = random.randrange(50,1000)
-        self.loc_y = random.randrange(50,500)
+
+        self.loc_x = loc_x
+        self.loc_y = loc_y
         self.hv = 10
         self.vv = 10
-        self.image = pygame.Surface((30, 20))
+        self.image = pygame.Surface((20, 50))
         self.image.set_colorkey((255, 255, 255))
-        self.image.blit(cha_surf, (-5, -10), (0, 0, 20, 10))
+        self.image.blit(cha_surf, (-10, -10), (0, 0, 30, 70))
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 
 

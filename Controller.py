@@ -8,11 +8,11 @@ from pygame.locals import *
 def main():
     pygame.init()
     WindowSize_x = 1034
-    WindowSize_y = 620
+    WindowSize_y = 600
     surface = pygame.display.set_mode([WindowSize_x,WindowSize_y])
     pygame.display.set_caption('Catch FLAG')
     background = pygame.image.load('ground.jpg').convert()
-    image_surf = pygame.image.load(r'F:\cis\3\figures.png').convert()
+    image_surf = pygame.image.load('mario_sprites.png').convert()
     surface.blit(background,(0,0))
 
 
@@ -26,7 +26,7 @@ def main():
     clock= pygame.time.Clock()
     running = True
     markup = None
-    g = Maze.Grid(19, 32)
+    g = Maze.Grid(19, 24)
     Maze.wilson(g)
     while running:
         clock.tick(60)
@@ -47,7 +47,7 @@ def main():
                 if event.key == K_q:  # Quit
                     running = False
                 if event.key == K_n:  # New
-                    g = Maze.Grid(19, 32)
+                    g = Maze.Grid(19, 24)
                     markup = None
                 if event.key == K_UP:
                     top = True
