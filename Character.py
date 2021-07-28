@@ -11,9 +11,9 @@ class Player(pygame.sprite.Sprite):
         self.loc_y = random.randrange(50,500)
         self.hv = 10
         self.vv = 10
-        self.image = pygame.Surface((30, 60))
+        self.image = pygame.Surface((30, 80))
         self.image.set_colorkey((255, 255, 255))
-        self.image.blit(cha_surf, (-5, -10), (0, 0, 430, 130))
+        self.image.blit(cha_surf, (-5, -10), (0, 0, 450, 130))
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 
 
