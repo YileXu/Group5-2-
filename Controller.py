@@ -7,7 +7,7 @@ from pygame.locals import *
 
 def main():
     pygame.init()
-    WindowSize_x = 1034
+    WindowSize_x = 1000
     WindowSize_y = 600
     surface = pygame.display.set_mode([WindowSize_x,WindowSize_y])
     pygame.display.set_caption('Catch FLAG')
@@ -46,9 +46,6 @@ def main():
                     running = False
                 if event.key == K_q:  # Quit
                     running = False
-                if event.key == K_n:  # New
-                    g = Maze.Grid(19, 24)
-                    markup = None
                 if event.key == K_UP:
                     top = True
                 if event.key == K_LEFT:
@@ -66,6 +63,8 @@ def main():
                 if event.key == K_d:
                     right1 = True
             if event.type == pygame.KEYUP:
+                if event.key == K_l:  # longest path
+                    markup = Maze.LongestPathMarkup(g)
                 if event.key == pygame.K_LEFT:
                     left = False
                 if event.key == pygame.K_RIGHT:
@@ -95,10 +94,11 @@ def main():
         if top1 and down1:
             top1 = False
             down1 = False
+
         surface.blit(background, (0, 0))
         display_grid(g, markup, surface)
-        player_zero.update(WindowSize_x, WindowSize_y, top, down, right, left)
-        player_one.update(WindowSize_x, WindowSize_y, top1, down1, right1, left1)
+        player_zero.update(g, top, down, right, left)
+        player_one.update(g, top1, down1, right1, left1)
         player_group.draw(surface)
         pygame.display.flip()
 
@@ -109,8 +109,9 @@ def display_grid(g, markup, screen):
     for row in range(g.num_rows):
         for col in range(g.num_columns):
             c = g.cell_at(row, col)
-            cell_x = col * 32 + 1
-            cell_y = row * 32 + 1
+            cell_x = col * 32+1
+            cell_y = row * 32+1
+
             # Draw top row
             if markup:
                 value = markup.get_item_at(row, col)
