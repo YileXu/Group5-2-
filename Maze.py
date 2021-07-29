@@ -3,11 +3,13 @@
 import random
 import math
 
+
 class Cell:
     ''' Represents a single cell of a maze.  Cells know their neighbors
         and know if they are linked (connected) to each.  Cells have
         four potential neighbors, in NSEW directions.
-    '''  
+    '''
+
     def __init__(self, row, column):
         assert row >= 0
         assert column >= 0
@@ -16,20 +18,20 @@ class Cell:
         self.links = {}
         self.north = None
         self.south = None
-        self.east  = None
-        self.west  = None
-        
+        self.east = None
+        self.west = None
+
     def link(self, cell, bidirectional=True):
         ''' Carve a connection to another cell (i.e. the maze connects them)'''
         assert isinstance(cell, Cell)
         self.links[cell] = True
         if bidirectional:
             cell.link(self, bidirectional=False)
-        
+
     def unlink(self, cell, bidirectional=True):
         ''' Remove a connection to another cell (i.e. the maze 
             does not connect the two cells)
-            
+
             Argument bidirectional is here so that I can call unlink on either
             of the two cells and both will be unlinked.
         '''
@@ -37,28 +39,28 @@ class Cell:
         del self.links[cell]
         if bidirectional:
             cell.unlink(self, bidirectional=False)
-            
+
     def is_linked(self, cell):
         ''' Test if this cell is connected to another cell.
-            
+
             Returns: True or False
         '''
         assert isinstance(cell, Cell)
         if cell in self.links:
             return True
         return False
-        
+
     def all_links(self):
         ''' Return a list of all cells that we are connected to.'''
         list1 = []
         for cell in self.links:
             list1.append(cell)
         return list1
-        
+
     def link_count(self):
         ''' Return the number of cells that we are connected to.'''
         return len(self.links)
-        
+
     def neighbors(self):
         ''' Return a list of all geographical neighboring cells, regardless
             of any connections.  Only returns actual cells, never a None.
@@ -73,17 +75,17 @@ class Cell:
         if self.west != None:
             list1.append(self.west)
         return list1
-                
+
     def __str__(self):
         return f'Cell at {self.row}, {self.column}'
-        
+
 
 class Grid:
     ''' A container to hold all the cells in a maze. The grid is a 
         rectangular collection, with equal numbers of columns in each
         row and vis versa.
     '''
-    
+
     def __init__(self, num_rows, num_columns):
         assert num_rows > 0
         assert num_columns > 0
@@ -91,17 +93,18 @@ class Grid:
         self.num_columns = num_columns
         self.grid = self.create_cells()
         self.connect_cells()
-        
+
     def create_cells(self):
         ''' Call the cells into being.  Keep track of them in a list
             for each row and a list of all rows (i.e. a 2d list-of-lists).
-            
+
             Do not connect the cells, as their neighbors may not yet have
             been created.
         '''
-        grid = [[Cell(r, c) for c in range(self.num_columns)] for r in range(self.num_rows)]
+        grid = [[Cell(r, c) for c in range(self.num_columns)]
+                for r in range(self.num_rows)]
         return grid
-            
+
     def connect_cells(self):
         ''' Now that all the cells have been created, connect them to 
             each other. 
@@ -117,12 +120,13 @@ class Grid:
             for c in range(1, self.num_columns-1):
                 self.grid[r][c].east = self.grid[r][c+1]
                 self.grid[r][c].west = self.grid[r][c-1]
-            self.grid[r][self.num_columns-1].west = self.grid[r][self.num_columns-2]
-        
+            self.grid[r][self.num_columns -
+                         1].west = self.grid[r][self.num_columns-2]
+
     def cell_at(self, row, column):
         ''' Retrieve the cell at a particular row/column index.'''
         return self.grid[row][column]
-        
+
     def deadends(self):
         ''' Return a list of all cells that are deadends (i.e. only link to
             one other cell).
@@ -134,7 +138,7 @@ class Grid:
                 if len(cur.links) == 1:
                     l.append(cur)
         return l
-                            
+
     def each_cell(self):
         ''' A generator.  Each time it is called, it will return one of 
             the cells in the grid.
@@ -143,20 +147,20 @@ class Grid:
             for col in range(self.num_columns):
                 c = self.cell_at(row, col)
                 yield c
-                
+
     def each_row(self):
         ''' A row is a list of cells.'''
         for row in self.grid:
             yield row
-               
+
     def random_cell(self):
         ''' Chose one of the cells in an independent, uniform distribution. '''
         return self.grid[math.floor(random.uniform(0, self.num_rows))][math.floor(random.uniform(0, self.num_columns))]
-        
+
     def size(self):
         ''' How many cells are in the grid? '''
         return self.num_rows * self.num_columns
-        
+
     def set_markup(self, markup):
         ''' Warning: this is a hack.
             Keep track of a markup, for use in representing the grid
@@ -164,7 +168,7 @@ class Grid:
             shouldn't be used elsewhere.
         '''
         self.markup = markup
-        
+
     def __str__(self):
         ret_val = '+' + '---+' * self.num_columns + '\n'
         for row in self.grid:
@@ -188,40 +192,41 @@ class Grid:
                     ret_val += '---+'
             ret_val += '\n'
         return ret_val
-        
+
+
 class Markup:
     ''' A Markup is a way to add data to a grid.  It is associated with
         a particular grid.
-        
+
         In this case, each cell can have a single object associated with it.
-        
+
         Subclasses could have other stuff, of course
     '''
-    
+
     def __init__(self, grid, default=' '):
         self.grid = grid
         self.marks = {}  # Key: cell, Value = some object
         self.default = default
         self.cost = {}
-        
+
     def reset(self):
         self.marks = {}
-        
+
     def __setitem__(self, cell, value):
         self.marks[cell] = value
-        
+
     def __getitem__(self, cell):
         return self.marks.get(cell, self.default)
-        
+
     def set_item_at(self, row, column, value):
         assert row >= 0 and row < self.grid.num_rows
         assert column >= 0 and column < self.grid.num_columns
         cell = self.grid.cell_at(row, column)
         if cell:
-            self.marks[cell]=value
+            self.marks[cell] = value
         else:
             raise IndexError
-    
+
     def get_item_at(self, row, column):
         assert row >= 0 and row < self.grid.num_rows
         assert column >= 0 and column < self.grid.num_columns
@@ -230,7 +235,7 @@ class Markup:
             return self.marks.get(cell)
         else:
             raise IndexError
-            
+
     def max(self):
         ''' Return the cell with the largest markup value. '''
         return max(self.marks.keys(), key=self.__getitem__)
@@ -238,6 +243,7 @@ class Markup:
     def min(self):
         ''' Return the cell with the largest markup value. '''
         return min(self.marks.keys(), key=self.__getitem__)
+
 
 class DijkstraMarkup(Markup):
     ''' A markup class that will run Djikstra's algorithm and keep track
@@ -254,7 +260,8 @@ class DijkstraMarkup(Markup):
         cur_water_count = 0
         while cur_water_count < water_count:
             visited = []
-            cur = self.grid.grid[random.randint(0, self.grid.num_rows-1)][random.randint(0, self.grid.num_columns-1)]
+            cur = self.grid.grid[random.randint(
+                0, self.grid.num_rows-1)][random.randint(0, self.grid.num_columns-1)]
             visited.append(cur)
             while len(visited) < water_per_center:
                 randNum = random.randint(0, 3)
@@ -280,25 +287,28 @@ class DijkstraMarkup(Markup):
             cur = frontier.pop(0)
             for neighbor in cur.all_links():
                 if neighbor not in self.marks:
-                    self.marks[neighbor] = self.marks[cur] + self.cost[neighbor]
+                    self.marks[neighbor] = self.marks[cur] + \
+                        self.cost[neighbor]
                     frontier.append(neighbor)
                 elif self.marks[neighbor] > self.marks[cur] + self.cost[neighbor]:
-                    self.marks[neighbor] = self.marks[cur] + self.cost[neighbor]
+                    self.marks[neighbor] = self.marks[cur] + \
+                        self.cost[neighbor]
 
     def farthest_cell(self):
         ''' Find the cell with the largest markup value, which will
             be the one farthest away from the root_call.
-            
+
             Returns: Tuple of (cell, distance)
         '''
         return (self.max(), self.marks[self.max()])
+
 
 class ShortestPathMarkup(DijkstraMarkup):
     ''' Given a starting cell and a goal cell, create a Markup that will
         have the shortest path between those two cells marked.  
     '''
 
-    def __init__(self, grid, start_cell, goal_cell, 
+    def __init__(self, grid, start_cell, goal_cell,
                  path_marker='*', non_path_marker=' '):
         super().__init__(grid, start_cell)
         mark_cells = []
@@ -317,6 +327,7 @@ class ShortestPathMarkup(DijkstraMarkup):
                 else:
                     self.marks[self.grid.grid[r][c]] = non_path_marker
 
+
 class LongestPathMarkup(ShortestPathMarkup):
     ''' Create a markup with the longest path in the graph marked.
         Note: Shortest path is dependent upon the start and target cells chosen.
@@ -328,8 +339,9 @@ class LongestPathMarkup(ShortestPathMarkup):
         dm = DijkstraMarkup(grid, start_cell)
         farthest, _ = dm.farthest_cell()
         dm = DijkstraMarkup(grid, farthest)
-        next_farthest, _ = dm.farthest_cell()   
+        next_farthest, _ = dm.farthest_cell()
         super().__init__(grid, farthest, next_farthest, path_marker, non_path_marker)
+
 
 class ColorizedMarkup(Markup):
     ''' Markup a maze with various colors.  Each value in the markup is
@@ -340,8 +352,8 @@ class ColorizedMarkup(Markup):
         assert channel in 'RGB'
         super().__init__(grid)
         self.channel = channel
-        
-    def colorize_dijkstra(self, start_row = None, start_column = None):
+
+    def colorize_dijkstra(self, start_row=None, start_column=None):
         ''' Provide colors for the maze based on their distance from
             some cell.  By default, from the center cell.
         '''
@@ -352,7 +364,7 @@ class ColorizedMarkup(Markup):
         start_cell = self.grid.cell_at(start_row, start_column)
         dm = DijkstraMarkup(self.grid, start_cell)
         self.intensity_colorize(dm)
-                
+
     def intensity_colorize(self, markup):
         ''' Given a markup of numeric values, colorize based on
             the relationship to the max numeric value.
@@ -362,7 +374,7 @@ class ColorizedMarkup(Markup):
         for c in self.grid.each_cell():
             cell_value = markup[c]
             intensity = (max_value - cell_value) / max_value
-            dark   = round(255 * intensity)
+            dark = round(255 * intensity)
             bright = round(127 * intensity) + 128
             if self.channel == 'R':
                 self.marks[c] = [bright, dark, dark]
@@ -370,13 +382,15 @@ class ColorizedMarkup(Markup):
                 self.marks[c] = [dark, bright, dark]
             else:
                 self.marks[c] = [dark, dark, bright]
-            if markup.cost[c] == 2: # water_cost
+            if markup.cost[c] == 2:  # water_cost
                 self.marks[c] = [dark, dark, bright]
+
 
 class FlagAndPlayersMarkup(Markup):
     ''' Markup a maze with Flag and Players Positions
     '''
-    def __init__(self, grid, flag_marker='f', player0_marker='p0', player1_marker='p1', props_marker='p', props_num=6, water_marker='w', ice_marker='i', non_marker=' '):
+
+    def __init__(self, grid, flag_marker='f', player0_marker='p0', player1_marker='p1', props_marker='p', props_num=6, non_marker=' '):
         super().__init__(grid)
         flag = grid.random_cell()
         dm = DijkstraMarkup(self.grid, flag)
@@ -387,16 +401,20 @@ class FlagAndPlayersMarkup(Markup):
         possible_player = []
         while len(possible_player) < 2:
             possible_player = []
-            rand_dist = possible_marks.pop(random.randint(0, len(possible_marks)-1))
+            rand_dist = possible_marks.pop(
+                random.randint(0, len(possible_marks)-1))
             for cell in dm.marks:
                 if dm.marks[cell] == rand_dist:
                     possible_player.append(cell)
-        player0 = possible_player.pop(random.randint(0, len(possible_player)-1))
-        player1 = possible_player.pop(random.randint(0, len(possible_player)-1))
+        player0 = possible_player.pop(
+            random.randint(0, len(possible_player)-1))
+        player1 = possible_player.pop(
+            random.randint(0, len(possible_player)-1))
         props = []
         non_props = [flag, player0, player1]
         while len(props) < props_num:
-            cur = self.grid.grid[random.randint(0, self.grid.num_rows-1)][random.randint(0, self.grid.num_columns-1)]
+            cur = self.grid.grid[random.randint(
+                0, self.grid.num_rows-1)][random.randint(0, self.grid.num_columns-1)]
             if cur not in non_props:
                 props.append(cur)
         for c in range(self.grid.num_columns):
@@ -409,10 +427,11 @@ class FlagAndPlayersMarkup(Markup):
             dm.marks[prop] = props_marker
         self.marks = dm.marks
         self.cost = dm.cost
-                                       
+
+
 def binary_tree(grid):
     ''' The Binary Tree Algorithm.
-      
+
         This algorithm works by visiting each cell and randomly choosing
         to link it to the cell to the east or the cell to the north.
         If there is no cell to the east, then always link to the north
@@ -421,22 +440,22 @@ def binary_tree(grid):
         don't link it to anything.)
     '''
     for r in range(grid.num_rows):
-            for c in range(grid.num_columns):
-                cur = grid.grid[r][c]
-                if cur.east != None and cur.south != None:
-                    if math.floor(random.uniform(0, 2)) == 0:
-                        cur.link(cur.east)
-                    else:
-                        cur.link(cur.south)
-                elif cur.east != None:
+        for c in range(grid.num_columns):
+            cur = grid.grid[r][c]
+            if cur.east != None and cur.south != None:
+                if math.floor(random.uniform(0, 2)) == 0:
                     cur.link(cur.east)
-                elif cur.south != None:
+                else:
                     cur.link(cur.south)
+            elif cur.east != None:
+                cur.link(cur.east)
+            elif cur.south != None:
+                cur.link(cur.south)
 
-            
+
 def sidewinder(grid, odds=.5):
     ''' The Sidewinder algorithm.
-    
+
         Considers each row, one at a time.
         For each row, start with the cell on the west end and an empty list 
         (the run).  Append the cell to the run list.
@@ -447,7 +466,7 @@ def sidewinder(grid, odds=.5):
         If the random number was less than the odds parameter, then you are
         done with the run.  Choose one of the cells in the run and link it to 
         the cell to the north.
-        
+
         Be careful, these instructions don't cover the cases where the row
         is the northernmost one (which will need to be a single, linked run) 
         or for cells at the far east (which automatically close the run)
@@ -469,10 +488,11 @@ def sidewinder(grid, odds=.5):
             randnum = random.randint(0, len(run_list)-1)
             run_list[randnum].link(run_list[randnum].north)
             cur += 1
-                
+
+
 def aldous_broder(grid):
     ''' The Aldous-Broder algorithm is a random-walk algorithm.
-    
+
         Start in a random cell.  Choose a random direction.  If the cell
         in that direction has not been visited yet, link the two cells.
         Otherwise, don't link.
@@ -500,11 +520,13 @@ def aldous_broder(grid):
                 visited.append(target)
             cur = target
             iteration_count += 1
-    print(f'Aldous-Broder executed on a grid of size {grid.size()} in {iteration_count} steps.')
-    
+    print(
+        f'Aldous-Broder executed on a grid of size {grid.size()} in {iteration_count} steps.')
+
+
 def wilson(grid):
     ''' Wilson's algorithm is a random-walk algorithm.
-    
+
         1) Choose a random cell.  Mark it visited.
         2) Choose a random unvisited cell (note, this will necessarily not be the 
           same cell from step 1).  Perform a "loop-erased" random walk until
@@ -514,7 +536,7 @@ def wilson(grid):
           Connect all the cells from the path, one to each other, and to the 
           already-visited cell it ran into.
         4) Repeat steps 2 and 3 until all cells are visited.
-        
+
         Great.  But, what is a "loop-erased" random walk?  At each step, one 
         random neighbor gets added to the path (which is kept track
         of in order).  Then, check if the neighbor is already in the path.  If 
@@ -522,7 +544,7 @@ def wilson(grid):
         path consisted of cells at locations (0,0), (0,1), (0,2), (1,2), (1,3),
         (2,3), (2,2), and the random neighbor is (1,2), then there is a loop.
         Chop the path back to (0,0), (0,1), (0,2), (1,2) and continue 
-        
+
         BTW, it  may be easier to manage a  list of unvisited cells, which 
         makes it simpler to choose a random unvisited cell, for instance.   
     '''
@@ -530,8 +552,8 @@ def wilson(grid):
     random_choices = 0
     loops_removed = 0
     for c in range(grid.num_columns):
-            for r in range(grid.num_rows):
-                unvisited.append(grid.grid[r][c])
+        for r in range(grid.num_rows):
+            unvisited.append(grid.grid[r][c])
     unvisited.pop(random.randint(0, len(unvisited)-1))
     random_choices = 1
     while unvisited != []:
@@ -554,7 +576,7 @@ def wilson(grid):
 
             if target != None:
                 # reaches visited cell, this is end
-                if target not in unvisited: 
+                if target not in unvisited:
                     end = True
                     for cell in path:
                         unvisited.remove(cell)
@@ -563,29 +585,31 @@ def wilson(grid):
                             path[cellIndex].link(path[cellIndex+1])
                     path[-1].link(target)
                 # reaches unvisited cell
-                else: 
+                else:
                     # if cell in path, here is loop, erase loop
-                    if target in path: 
+                    if target in path:
                         loopIndex = path.index(target)
                         loops_removed += 1
                         # if start cell in loop, this is end
-                        if loopIndex == 0: 
+                        if loopIndex == 0:
                             end = True
                         # if start cell not in loop, erase and continue
                         else:
                             path = path[:loopIndex]
                             cur = path[-1]
                     # if cell not in path, great, add it to path
-                    else: 
+                    else:
                         cur = target
-                        path.append(cur)   
+                        path.append(cur)
 
-    print(f'Wilson executed on a grid of size {grid.size()} with {random_choices}', end='')
+    print(
+        f'Wilson executed on a grid of size {grid.size()} with {random_choices}', end='')
     print(f' random cells choosen and {loops_removed} loops removed')
-            
+
+
 def recursive_backtracker(grid, start_cell=None):
     ''' Recursive Backtracker is a high-river maze algorithm.
-    
+
         1) if start_cell is None, choose a random cell for the start
         2) Examine all neighbors and make a list of those that have not been visited
            Note: you can tell it hasn't been visited if it is not linked to any cell
@@ -593,7 +617,7 @@ def recursive_backtracker(grid, start_cell=None):
            neighbor
         3a) If there are no neighbors in the list, then you must backtrack to the last
             cell you visited and repeat.
-            
+
         Suggestion: Use an explicit stack.  You can write this implicitly (in fact,
         the code will be quite short), but for large mazes you will be making lots of 
         function calls and you risk running out of stack space.
@@ -607,6 +631,7 @@ def recursive_backtracker(grid, start_cell=None):
     visited.append(cur)
     stack.append(cur)
     recursive_backtracker_runner(grid, cur, visited, stack)
+
 
 def recursive_backtracker_runner(grid, cur, visited, stack):
     neighbor = []
@@ -630,12 +655,13 @@ def recursive_backtracker_runner(grid, cur, visited, stack):
         back = stack.pop()
         recursive_backtracker_runner(grid, back, visited, stack)
 
+
 def ABWilson(grid, change=0.5):
     unvisited = []
     iteration_count = 0
     for c in range(grid.num_columns):
-            for r in range(grid.num_rows):
-                unvisited.append(grid.grid[r][c])
+        for r in range(grid.num_rows):
+            unvisited.append(grid.grid[r][c])
     cur = unvisited.pop(random.randint(0, len(unvisited)-1))
     while len(unvisited) > grid.size() * change:
         randNum = random.randint(0, 3)
@@ -673,7 +699,7 @@ def ABWilson(grid, change=0.5):
 
             if target != None:
                 # reaches visited cell, this is end
-                if target not in unvisited: 
+                if target not in unvisited:
                     end = True
                     for cell in path:
                         unvisited.remove(cell)
@@ -682,19 +708,20 @@ def ABWilson(grid, change=0.5):
                             path[cellIndex].link(path[cellIndex+1])
                     path[-1].link(target)
                 # reaches unvisited cell
-                else: 
+                else:
                     # if cell in path, here is loop, erase loop
-                    if target in path: 
+                    if target in path:
                         loopIndex = path.index(target)
                         # if start cell in loop, this is end
-                        if loopIndex == 0: 
+                        if loopIndex == 0:
                             end = True
                         # if start cell not in loop, erase and continue
                         else:
                             path = path[:loopIndex]
                             cur = path[-1]
                     # if cell not in path, great, add it to path
-                    else: 
+                    else:
                         cur = target
-                        path.append(cur)   
-    print(f'Aldous-Broder Wilson executed on a grid of size {grid.size()} in {iteration_count} steps.')
+                        path.append(cur)
+    print(
+        f'Aldous-Broder Wilson executed on a grid of size {grid.size()} in {iteration_count} steps.')
