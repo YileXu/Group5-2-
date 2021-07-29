@@ -133,7 +133,7 @@ def main():
         player_group.clear(surface, background)
         player_zero.update(g, top, down, right, left)
         player_one.update(g, top1, down1, right1, left1)
-        if Maze.Markup(g).get_item_at(player_one.row, player_one.col) == 'f' and Maze.Markup(g).get_item_at(player_zero.row, player_zero.col) == 'f':
+        if markup.get_item_at(player_one.row, player_one.col) == 'f' or markup.get_item_at(player_zero.row, player_zero.col) == 'f':
             running = False
 
         player_group.draw(surface)
@@ -191,6 +191,12 @@ def display_grid(g, markup, screen, player_zero, player_one):
                                        7,  #radius
                                        0)  #filled
                     player_one.directMoveViaLoc(cell_x+16.5, cell_y+16.5)
+                if value == 'p':  # Player
+                    pygame.draw.circle(screen,
+                                       (255,255,255),
+                                       (cell_x+15,cell_y+15),
+                                       7,  #radius
+                                       0)  #filled
                 if isinstance(value, list) and len(value) == 3:
                     pygame.draw.rect(screen,
                                      value,  # color
