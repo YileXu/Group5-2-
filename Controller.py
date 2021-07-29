@@ -21,6 +21,7 @@ def main():
     player_one_sprite = pygame.transform.scale(player_one_sprite, (int(player_one_sprite.get_size()[0]/4), int(player_one_sprite.get_size()[1]/4)))
     background_zero = pygame.transform.scale(background_zero,(int(background_zero.get_size()[0]*3), int(background_zero.get_size()[1]*2)) )
     surface.blit(background,(0,0))
+
     '''drawing the background and players initially'''
 
     player_group = pygame.sprite.Group()
@@ -48,20 +49,17 @@ def main():
         if state == 1:
             break
         pygame.display.flip()
-
+    '''initial interface'''
 
     surface.blit(background, (0, 0))
     g = Maze.Grid(18, 24)
     Maze.ABWilson(g)
     markup = Maze.FlagAndPlayersMarkup(g)
-    '''surface.blit(background, (0, 0))'''
     display_grid(g, markup, surface, player_zero, player_one)
     player_group.clear(surface, background)
     player_zero.rectChange()
     player_one.rectChange()
-    '''player_group.draw(surface)'''
-    '''print(player_zero.loc_x, player_zero.loc_y)'''
-    '''pygame.display.flip()'''
+    '''game interface'''
     while running:
         clock.tick(60)
         left = False
@@ -133,7 +131,7 @@ def main():
         player_group.clear(surface, background)
         player_zero.update(g, top, down, right, left)
         player_one.update(g, top1, down1, right1, left1)
-        if Maze.Markup(g).get_item_at(player_one.row, player_one.col) == 'f' and Maze.Markup(g).get_item_at(player_zero.row, player_zero.col) == 'f':
+        if markup.get_item_at(player_one.row, player_one.col) == 'f' or markup.get_item_at(player_zero.row, player_zero.col) == 'f':
             running = False
 
         player_group.draw(surface)

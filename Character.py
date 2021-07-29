@@ -67,40 +67,32 @@ class Player(pygame.sprite.Sprite):
 
 
 
-
-
-
-
-
-
-
-
-
-
 class Gadgets(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.appear = False
 
 
+
 class Mine(Gadgets):
     '''if a mine is reached by a player, the player will be sent to somewhere adjacent'''
-    def __init__(self):
+    def __init__(self, grid):
         super().__init__()
+
 
 class Transporter(Gadgets):
     '''if a transporter is reached by a player, '''
-    def __init__(self):
+    def __init__(self, grid):
         super().__init__()
 class Bomb(Gadgets):
-    def __init__(self):
+    def __init__(self, grid):
         super().__init__()
 
 class Converse(Gadgets):
-    def __init__(self):
+    def __init__(self, grid):
         super().__init__()
 
 class PassWall(Gadgets):
-    def __init__(self):
+    def __init__(self, grid):
         super().__init__()
 
