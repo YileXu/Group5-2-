@@ -250,13 +250,14 @@ class DijkstraMarkup(Markup):
         of the distance values for each cell.
     '''
 
-    def __init__(self, grid, root_cell, default=0, water_count=2, water_per_center=20, water_cost=2):
+    def __init__(self, grid, root_cell, default=0, water_count=2, water_per_center=20, water_cost=3, ice_count=1, ice_max_length=4, ice_cost=2):
         ''' Execute the algorithm and store each cell's value in self.marks[]
         '''
         super().__init__(grid, default)
         for c in range(self.grid.num_columns):
             for r in range(self.grid.num_rows):
                 self.cost[self.grid.grid[r][c]] = 1
+
         cur_water_count = 0
         while cur_water_count < water_count:
             visited = []
@@ -280,6 +281,18 @@ class DijkstraMarkup(Markup):
             for cell in visited:
                 self.cost[cell] = water_cost
             cur_water_count += 1
+
+        cur_ice_count = 0
+        while cur_ice_count < ice_count:
+            lu_row = random.randint(0, self.grid.num_rows-1-ice_max_length)
+            lu_col = random.randint(0, self.grid.num_columns-1-ice_max_length)
+            rd_row = lu_row + random.randint(1, ice_max_length)
+            rd_col = lu_col + random.randint(1, ice_max_length)
+            for c in range(lu_col, rd_col+1):
+                for r in range(lu_row, rd_row+1):
+                    self.cost[self.grid.grid[r][c]] = ice_cost
+            cur_ice_count += 1
+
         self.marks[root_cell] = 0
         frontier = []
         frontier.append(root_cell)
