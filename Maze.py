@@ -350,14 +350,14 @@ class FlagAndPlayersMarkup(Markup):
         super().__init__(grid)
         flag = grid.random_cell()
         dm = DijkstraMarkup(self.grid, flag)
-        max_mark = dm.farthest_cell()[1]
-        possible_marks = []
+        max_mark = dm.farthest_cell()[1]     #the farthest markup of flag
+        possible_marks = []                  #store all the actual markups
         for mark in range(1, max_mark+1):
             possible_marks.append(mark)
         possible_player = []
         while len(possible_player) < 2:
             possible_player = []
-            rand_dist = possible_marks.pop(random.randint(0, len(possible_marks)-1))
+            rand_dist = possible_marks.pop(random.randint(0, len(possible_marks)-1))     # the list after randomly pop one possible mark
             for cell in dm.marks:
                 if dm.marks[cell] == rand_dist:
                     possible_player.append(cell)
@@ -461,8 +461,8 @@ def aldous_broder(grid):
                 visited.append(target)
             cur = target
             iteration_count += 1
-    print(f'Aldous-Broder executed on a grid of size {grid.size()} in {iteration_count} steps.')
-    
+    '''print(f'Aldous-Broder executed on a grid of size {grid.size()} in {iteration_count} steps.')
+    '''
 def wilson(grid):
     ''' Wilson's algorithm is a random-walk algorithm.
     

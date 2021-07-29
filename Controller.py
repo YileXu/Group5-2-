@@ -1,6 +1,7 @@
 import pygame.gfxdraw
 import Maze
 import random
+import  sys
 import Character
 import pygame
 from pygame.locals import *
@@ -10,35 +11,57 @@ def main():
     WindowSize_x = 1000
     WindowSize_y = 600
     surface = pygame.display.set_mode([WindowSize_x,WindowSize_y])
-    pygame.display.set_caption('Catch FLAG')
-    background = pygame.image.load('ground.jpg').convert()
-    image_surf = pygame.image.load('mario_sprites.png').convert()
+    pygame.display.set_caption('CATCH THE FLAG')
+    background = pygame.image.load('背景图片/瓷砖.jpg').convert()
+    background_zero = pygame.image.load('背景图片/menu.png').convert()
+    background_final = pygame.image.load('mario_background.png').convert()
     player_zero_sprite = pygame.image.load('sprites/players/Mario.png').convert()
     player_one_sprite = pygame.image.load('sprites/players/Luigi.png').convert()
     player_zero_sprite = pygame.transform.scale(player_zero_sprite, (int(player_zero_sprite.get_size()[0]/4), int(player_zero_sprite.get_size()[1]/4)))
     player_one_sprite = pygame.transform.scale(player_one_sprite, (int(player_one_sprite.get_size()[0]/4), int(player_one_sprite.get_size()[1]/4)))
+    background_zero = pygame.transform.scale(background_zero,(int(background_zero.get_size()[0]*3), int(background_zero.get_size()[1]*2)) )
     surface.blit(background,(0,0))
+    '''drawing the background and players initially'''
 
     player_group = pygame.sprite.Group()
     player_zero = Character.Player(player_zero_sprite)
     player_one = Character.Player(player_one_sprite)
     player_group.add(player_zero)
     player_group.add(player_one)
+    '''initialize the players'''
 
     clock= pygame.time.Clock()
     running = True
-    
-    g = Maze.Grid(18, 24)
-    Maze.aldous_broder(g)
-    markup = Maze.FlagAndPlayersMarkup(g)
+    state = 0
+    final = True
+    '''loop things'''
+
+    while True:
+        surface.blit(background_zero, (0, 0))
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == K_ESCAPE:
+                    sys.exit()
+                if event.key == K_b:
+                    state += 1
+                    break
+        if state == 1:
+            break
+        pygame.display.flip()
+
+
     surface.blit(background, (0, 0))
+    g = Maze.Grid(18, 24)
+    Maze.ABWilson(g)
+    markup = Maze.FlagAndPlayersMarkup(g)
+    '''surface.blit(background, (0, 0))'''
     display_grid(g, markup, surface, player_zero, player_one)
     player_group.clear(surface, background)
     player_zero.rectChange()
     player_one.rectChange()
-    player_group.draw(surface)
-    print(player_zero.loc_x, player_zero.loc_y)
-    pygame.display.flip()
+    '''player_group.draw(surface)'''
+    '''print(player_zero.loc_x, player_zero.loc_y)'''
+    '''pygame.display.flip()'''
     while running:
         clock.tick(60)
         left = False
@@ -49,6 +72,7 @@ def main():
         top1 = False
         right1 = False
         down1 = False
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -73,6 +97,7 @@ def main():
                     down1 = True
                 if event.key == K_d:
                     right1 = True
+
             if event.type == pygame.KEYUP:
                 if event.key == K_l:  # longest path
                     markup = Maze.LongestPathMarkup(g)
@@ -98,19 +123,34 @@ def main():
         if left1 and right1:
             left1 = False
             right1 = False
-
         if top and down:
             top = False
             down = False
         if top1 and down1:
             top1 = False
             down1 = False
-        
+
         player_group.clear(surface, background)
         player_zero.update(g, top, down, right, left)
         player_one.update(g, top1, down1, right1, left1)
+        if Maze.Markup(g).get_item_at(player_one.row, player_one.col) == 'f' and Maze.Markup(g).get_item_at(player_zero.row, player_zero.col) == 'f':
+            running = False
+
         player_group.draw(surface)
         pygame.display.flip()
+    while final :
+        clock.tick(30)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                final = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    final = False
+        surface.blit(background_final, (0, 0))
+        pygame.display.flip()
+
+
+
 
 
 def display_grid(g, markup, screen, player_zero, player_one):

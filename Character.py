@@ -57,6 +57,7 @@ class Player(pygame.sprite.Sprite):
                     self.col = (int)(self.loc_x + 15.5) // 32 -1
                     self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 
+
     def rectChange(self):
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 
@@ -80,8 +81,7 @@ class Gadgets(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         self.appear = False
-        self.size_x = 30
-        self.size_y = 30
+
 
 class Mine(Gadgets):
     '''if a mine is reached by a player, the player will be sent to somewhere adjacent'''
@@ -93,10 +93,6 @@ class Transporter(Gadgets):
     def __init__(self):
         super().__init__()
 class Bomb(Gadgets):
-    def __init__(self):
-        super().__init__()
-
-class Shoes(Gadgets):
     def __init__(self):
         super().__init__()
 
