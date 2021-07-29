@@ -346,29 +346,37 @@ class ColorizedMarkup(Markup):
 class FlagAndPlayersMarkup(Markup):
     ''' Markup a maze with Flag and Players Positions
     '''
-    def __init__(self, grid, flag_marker='f', player0_marker='p0', player1_marker='p1', non_marker=' '):
+    def __init__(self, grid, flag_marker='f', player0_marker='p0', player1_marker='p1', props_marker='p', props_num=6, water_marker='w', non_marker=' '):
         super().__init__(grid)
         flag = grid.random_cell()
         dm = DijkstraMarkup(self.grid, flag)
-        max_mark = dm.farthest_cell()[1]     #the farthest markup of flag
-        possible_marks = []                  #store all the actual markups
+        max_mark = dm.farthest_cell()[1]
+        possible_marks = []
         for mark in range(1, max_mark+1):
             possible_marks.append(mark)
         possible_player = []
         while len(possible_player) < 2:
             possible_player = []
-            rand_dist = possible_marks.pop(random.randint(0, len(possible_marks)-1))     # the list after randomly pop one possible mark
+            rand_dist = possible_marks.pop(random.randint(0, len(possible_marks)-1))
             for cell in dm.marks:
                 if dm.marks[cell] == rand_dist:
                     possible_player.append(cell)
         player0 = possible_player.pop(random.randint(0, len(possible_player)-1))
         player1 = possible_player.pop(random.randint(0, len(possible_player)-1))
+        props = []
+        non_props = [flag, player0, player1]
+        while len(props) < props_num:
+            cur = self.grid.grid[random.randint(0, self.grid.num_rows-1)][random.randint(0, self.grid.num_columns-1)]
+            if cur not in non_props:
+                props.append(cur)
         for c in range(self.grid.num_columns):
             for r in range(self.grid.num_rows):
                 dm.marks[self.grid.grid[r][c]] = non_marker
         dm.marks[flag] = flag_marker
         dm.marks[player0] = player0_marker
         dm.marks[player1] = player1_marker
+        for prop in props:
+            dm.marks[prop] = props_marker
         self.marks = dm.marks
                                        
 def binary_tree(grid):
@@ -461,8 +469,8 @@ def aldous_broder(grid):
                 visited.append(target)
             cur = target
             iteration_count += 1
-    '''print(f'Aldous-Broder executed on a grid of size {grid.size()} in {iteration_count} steps.')
-    '''
+    print(f'Aldous-Broder executed on a grid of size {grid.size()} in {iteration_count} steps.')
+    
 def wilson(grid):
     ''' Wilson's algorithm is a random-walk algorithm.
     

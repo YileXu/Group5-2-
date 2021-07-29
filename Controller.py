@@ -189,6 +189,12 @@ def display_grid(g, markup, screen, player_zero, player_one):
                                        7,  #radius
                                        0)  #filled
                     player_one.directMoveViaLoc(cell_x+16.5, cell_y+16.5)
+                if value == 'p':  # Player
+                    pygame.draw.circle(screen,
+                                       (255,255,255),
+                                       (cell_x+15,cell_y+15),
+                                       7,  #radius
+                                       0)  #filled
                 if isinstance(value, list) and len(value) == 3:
                     pygame.draw.rect(screen,
                                      value,  # color
