@@ -202,6 +202,7 @@ class Markup:
         self.grid = grid
         self.marks = {}  # Key: cell, Value = some object
         self.default = default
+        self.cost = {}
         
     def reset(self):
         self.marks = {}
@@ -243,10 +244,35 @@ class DijkstraMarkup(Markup):
         of the distance values for each cell.
     '''
 
-    def __init__(self, grid, root_cell, default=0):
+    def __init__(self, grid, root_cell, default=0, water_count=2, water_per_center=20, water_cost=2):
         ''' Execute the algorithm and store each cell's value in self.marks[]
         '''
         super().__init__(grid, default)
+        for c in range(self.grid.num_columns):
+            for r in range(self.grid.num_rows):
+                self.cost[self.grid.grid[r][c]] = 1
+        cur_water_count = 0
+        while cur_water_count < water_count:
+            visited = []
+            cur = self.grid.grid[random.randint(0, self.grid.num_rows-1)][random.randint(0, self.grid.num_columns-1)]
+            visited.append(cur)
+            while len(visited) < water_per_center:
+                randNum = random.randint(0, 3)
+                if randNum == 0:
+                    target = cur.north
+                if randNum == 1:
+                    target = cur.south
+                if randNum == 2:
+                    target = cur.east
+                if randNum == 3:
+                    target = cur.west
+                if target != None:
+                    if target not in visited:
+                        visited.append(target)
+                    cur = target
+            for cell in visited:
+                self.cost[cell] = water_cost
+            cur_water_count += 1
         self.marks[root_cell] = 0
         frontier = []
         frontier.append(root_cell)
@@ -254,8 +280,10 @@ class DijkstraMarkup(Markup):
             cur = frontier.pop(0)
             for neighbor in cur.all_links():
                 if neighbor not in self.marks:
-                    self.marks[neighbor] = self.marks[cur] + 1
+                    self.marks[neighbor] = self.marks[cur] + self.cost[neighbor]
                     frontier.append(neighbor)
+                elif self.marks[neighbor] > self.marks[cur] + self.cost[neighbor]:
+                    self.marks[neighbor] = self.marks[cur] + self.cost[neighbor]
 
     def farthest_cell(self):
         ''' Find the cell with the largest markup value, which will
@@ -341,12 +369,14 @@ class ColorizedMarkup(Markup):
             elif self.channel == 'G':
                 self.marks[c] = [dark, bright, dark]
             else:
-                self.marks[c] = [dark, dark, bright]   
+                self.marks[c] = [dark, dark, bright]
+            if markup.cost[c] == 2: # water_cost
+                self.marks[c] = [dark, dark, bright]
 
 class FlagAndPlayersMarkup(Markup):
     ''' Markup a maze with Flag and Players Positions
     '''
-    def __init__(self, grid, flag_marker='f', player0_marker='p0', player1_marker='p1', props_marker='p', props_num=6, water_marker='w', non_marker=' '):
+    def __init__(self, grid, flag_marker='f', player0_marker='p0', player1_marker='p1', props_marker='p', props_num=6, water_marker='w', ice_marker='i', non_marker=' '):
         super().__init__(grid)
         flag = grid.random_cell()
         dm = DijkstraMarkup(self.grid, flag)
@@ -378,6 +408,7 @@ class FlagAndPlayersMarkup(Markup):
         for prop in props:
             dm.marks[prop] = props_marker
         self.marks = dm.marks
+        self.cost = dm.cost
                                        
 def binary_tree(grid):
     ''' The Binary Tree Algorithm.
@@ -422,7 +453,7 @@ def sidewinder(grid, odds=.5):
         or for cells at the far east (which automatically close the run)
     '''
     assert odds >= 0.0
-    assert odds < 1.0  
+    assert odds < 1.0
     for c in range(grid.num_columns-1):
         grid.grid[0][c].link(grid.grid[0][c+1])
     for r in range(1, grid.num_rows):
