@@ -21,7 +21,6 @@ def main():
     player_one_sprite = pygame.transform.scale(player_one_sprite, (int(player_one_sprite.get_size()[0]/4), int(player_one_sprite.get_size()[1]/4)))
     background_zero = pygame.transform.scale(background_zero,(int(background_zero.get_size()[0]*2), int(background_zero.get_size()[1]*2.3)) )
     background_final = pygame.transform.scale(background_final, (int(background_final.get_size()[0] * 2.2), int(background_final.get_size()[1] * 3)))
-
     surface.blit(background,(0,0))
 
 
@@ -30,8 +29,7 @@ def main():
     player_group = pygame.sprite.Group()
     player_zero = Character.Player(player_zero_sprite)
     player_one = Character.Player(player_one_sprite)
-    player_group.add(player_zero)
-    player_group.add(player_one)
+    player_group.add(player_zero, player_one)
 
     gadgets_group = pygame.sprite.Group()
     randombox1 = Character.Randombox()
@@ -40,6 +38,18 @@ def main():
     randombox4 = Character.Randombox()
     randombox5 = Character.Randombox()
     randombox6 = Character.Randombox()
+
+    land_group = pygame.sprite.Group()
+    ice_list = []
+    for i in range(20):
+        ice = Character.Ice()
+        ice_list.append(ice)
+        land_group.add(ice)
+    water_list = []
+    for i in range(40):
+        water = Character.Water()
+        water_list.append(water)
+        land_group.add(water)
     '''mine = Character.Mine()
     transporter = Character.Transporter()
     bomb = Character.Bomb()
@@ -47,12 +57,7 @@ def main():
     passwall = Character.PassWall()
     trap = Character.Trap()'''
 
-    gadgets_group.add(randombox1)
-    gadgets_group.add(randombox2)
-    gadgets_group.add(randombox3)
-    gadgets_group.add(randombox4)
-    gadgets_group.add(randombox5)
-    gadgets_group.add(randombox6)
+    gadgets_group.add(randombox1, randombox2, randombox3, randombox4, randombox5, randombox6)
     '''gadgets_group.add(mine)
     gadgets_group.add(transporter)
     gadgets_group.add(bomb)
@@ -85,13 +90,17 @@ def main():
 
     surface.blit(background, (0, 0))
     g = Maze.Grid(18, 24)
-    Maze.ABWilson(g)
+    Maze.wilson(g)
     markup = Maze.FlagAndPlayersMarkup(g)
     list = [randombox1, randombox2, randombox3, randombox4, randombox5, randombox6]
-    display_grid(g, markup, surface, player_zero, player_one, list)
+    display_grid(g, markup, surface, player_zero, player_one, list, ice_list, water_list)
     player_group.clear(surface, background)
     player_zero.rectChange()
     player_one.rectChange()
+    for ice in ice_list:
+        ice.rectChange()
+    for water in water_list:
+        water.rectChange()
 
     randombox1.rectChange()
     randombox2.rectChange()
@@ -171,6 +180,7 @@ def main():
             down1 = False
 
         player_group.clear(surface, background)
+        pygame.sprite.groupcollide(player_group, land_group, False, False, collided=pygame.sprite.collide_rect)
         if len(gadgets_group) > 0:
             pygame.sprite.groupcollide(player_group, gadgets_group, False, True, collided=pygame.sprite.collide_circle)
 
@@ -190,6 +200,7 @@ def main():
             running = False
 
         player_group.draw(surface)
+        land_group.draw(surface)
         gadgets_group.draw(surface)
         pygame.display.flip()
         '''game loop'''
@@ -210,7 +221,7 @@ def main():
 
 
 
-def display_grid(g, markup, screen, player_zero, player_one, gad_list):
+def display_grid(g, markup, screen, player_zero, player_one, gad_list, icelist, waterlist):
     for row in range(g.num_rows):
         for col in range(g.num_columns):
             c = g.cell_at(row, col)
@@ -220,8 +231,25 @@ def display_grid(g, markup, screen, player_zero, player_one, gad_list):
             # Draw top row
             if markup:
                 value = markup.get_item_at(row, col)
+                cos = markup.get_item_in(row, col)
                 if not value:
                     continue
+                if cos == 2:    # Ice
+                    pygame.draw.circle(screen,
+                                       (135, 206, 235),
+                                       (cell_x + 15, cell_y + 15),
+                                       9,  # radius
+                                       0)  # filled
+                    icelist[0].directMoveViaLoc(cell_x + 16.5, cell_y + 16.5)
+                    icelist.pop(0)
+                if cos == 3:    # Water
+                    pygame.draw.circle(screen,
+                                       (65, 105, 225),
+                                       (cell_x + 15, cell_y + 15),
+                                       9,  # radius
+                                       0)  # filled
+                    waterlist[0].directMoveViaLoc(cell_x + 16.5, cell_y + 16.5)
+                    waterlist.pop(0)
                 if value == '*':  # Path marker
                     pygame.draw.circle(screen,
                                        (255, 255, 50),

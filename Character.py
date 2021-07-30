@@ -14,7 +14,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
         self.col = (int)(self.loc_x + 15.5) // 32 -1
         self.row = (int)(self.loc_y + 15.5) // 32 -1
-        self.posses = {0: False,
+        self.pos = {0: False,
                        1: False,
                        2: False,
                        3: False,
@@ -70,7 +70,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 
     def getGadget(self):
-        if chance <= 3:
+        if self.chance <= 3:
             a = random.randrange(6)
             self.pos[a] = True
 
@@ -245,6 +245,54 @@ class Trap(pygame.sprite.Sprite):
         self.loc_y = loc_y
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 
+    def rectChange(self):
+        self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
+
+
+
+class Ice(pygame.sprite.Sprite):
+
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.loc_x = 16.5
+        self.loc_y = 16.5
+        self.gad_surf = pygame.image.load('sprites/道具/冰.png').convert()
+        self.image = pygame.Surface((20, 20))
+        self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
+        self.image.blit(self.gad_surf, (0, 0), (0, 0, self.gad_surf.get_rect().size[0], self.gad_surf.get_rect().size[1]))
+        self.col = (int)(self.loc_x + 15.5) // 32 - 1
+        self.row = (int)(self.loc_y + 15.5) // 32 - 1
+
+    def directMoveViaLoc(self, loc_x, loc_y):
+        self.col = (int)(loc_x + 15.5) // 32 - 1
+        self.row = (int)(loc_y + 15.5) // 32 - 1
+        self.loc_x = loc_x
+        self.loc_y = loc_y
+        self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
+    def rectChange(self):
+        self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
+
+
+class Water(pygame.sprite.Sprite):
+
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        self.loc_x = 16.5
+        self.loc_y = 16.5
+        self.gad_surf = pygame.image.load('sprites/道具/水.jpg').convert()
+        self.image = pygame.Surface((20, 20))
+        self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
+        self.image.blit(self.gad_surf, (0, 0),
+                        (0, 0, self.gad_surf.get_rect().size[0], self.gad_surf.get_rect().size[1]))
+        self.col = (int)(self.loc_x + 15.5) // 32 - 1
+        self.row = (int)(self.loc_y + 15.5) // 32 - 1
+
+    def directMoveViaLoc(self, loc_x, loc_y):
+        self.col = (int)(loc_x + 15.5) // 32 - 1
+        self.row = (int)(loc_y + 15.5) // 32 - 1
+        self.loc_x = loc_x
+        self.loc_y = loc_y
+        self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
     def rectChange(self):
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 

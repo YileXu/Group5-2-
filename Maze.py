@@ -235,6 +235,15 @@ class Markup:
             return self.marks.get(cell)
         else:
             raise IndexError
+    def get_item_in(self, row, column):
+        assert row >= 0 and row < self.grid.num_rows
+        assert column >= 0 and column < self.grid.num_columns
+        cell = self.grid.cell_at(row, column)
+        if cell:
+            return self.cost.get(cell)
+        else:
+            raise IndexError
+
 
     def max(self):
         ''' Return the cell with the largest markup value. '''
@@ -261,8 +270,7 @@ class DijkstraMarkup(Markup):
         cur_water_count = 0
         while cur_water_count < water_count:
             visited = []
-            cur = self.grid.grid[random.randint(
-                0, self.grid.num_rows-1)][random.randint(0, self.grid.num_columns-1)]
+            cur = self.grid.grid[random.randint(0, self.grid.num_rows-1)][random.randint(0, self.grid.num_columns-1)] #random cell
             visited.append(cur)
             while len(visited) < water_per_center:
                 randNum = random.randint(0, 3)
