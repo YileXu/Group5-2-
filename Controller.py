@@ -8,19 +8,22 @@ from pygame.locals import *
 
 def main():
     pygame.init()
-    WindowSize_x = 1000
-    WindowSize_y = 600
-    surface = pygame.display.set_mode([WindowSize_x,WindowSize_y])
+    WindowSize_x = 800
+    WindowSize_y = 670
+    surface = pygame.display.set_mode([WindowSize_x, WindowSize_y])
     pygame.display.set_caption('CATCH THE FLAG')
     background = pygame.image.load('背景图片/瓷砖.jpg').convert()
     background_zero = pygame.image.load('背景图片/menu.png').convert()
-    background_final = pygame.image.load('mario_background.png').convert()
-    player_zero_sprite = pygame.image.load('sprites/players/Mario.png').convert()
+    background_final = pygame.image.load('gameover.png').convert()
+    player_zero_sprite = pygame.image.load('sprites/players/Pepper-Pete.png').convert()
     player_one_sprite = pygame.image.load('sprites/players/Luigi.png').convert()
     player_zero_sprite = pygame.transform.scale(player_zero_sprite, (int(player_zero_sprite.get_size()[0]/4), int(player_zero_sprite.get_size()[1]/4)))
     player_one_sprite = pygame.transform.scale(player_one_sprite, (int(player_one_sprite.get_size()[0]/4), int(player_one_sprite.get_size()[1]/4)))
-    background_zero = pygame.transform.scale(background_zero,(int(background_zero.get_size()[0]*3), int(background_zero.get_size()[1]*2)) )
+    background_zero = pygame.transform.scale(background_zero,(int(background_zero.get_size()[0]*2), int(background_zero.get_size()[1]*2.3)) )
+    background_final = pygame.transform.scale(background_final, (int(background_final.get_size()[0] * 2.2), int(background_final.get_size()[1] * 3)))
+
     surface.blit(background,(0,0))
+
 
     '''drawing the background and players initially'''
 
@@ -29,6 +32,35 @@ def main():
     player_one = Character.Player(player_one_sprite)
     player_group.add(player_zero)
     player_group.add(player_one)
+
+    gadgets_group = pygame.sprite.Group()
+    randombox1 = Character.Randombox()
+    randombox2 = Character.Randombox()
+    randombox3 = Character.Randombox()
+    randombox4 = Character.Randombox()
+    randombox5 = Character.Randombox()
+    randombox6 = Character.Randombox()
+    '''mine = Character.Mine()
+    transporter = Character.Transporter()
+    bomb = Character.Bomb()
+    converse = Character.Converse()
+    passwall = Character.PassWall()
+    trap = Character.Trap()'''
+
+    gadgets_group.add(randombox1)
+    gadgets_group.add(randombox2)
+    gadgets_group.add(randombox3)
+    gadgets_group.add(randombox4)
+    gadgets_group.add(randombox5)
+    gadgets_group.add(randombox6)
+    '''gadgets_group.add(mine)
+    gadgets_group.add(transporter)
+    gadgets_group.add(bomb)
+    gadgets_group.add(converse)
+    gadgets_group.add(passwall)
+    gadgets_group.add(trap)'''
+
+
     '''initialize the players'''
 
     clock= pygame.time.Clock()
@@ -55,11 +87,21 @@ def main():
     g = Maze.Grid(18, 24)
     Maze.ABWilson(g)
     markup = Maze.FlagAndPlayersMarkup(g)
-    display_grid(g, markup, surface, player_zero, player_one)
+    list = [randombox1, randombox2, randombox3, randombox4, randombox5, randombox6]
+    display_grid(g, markup, surface, player_zero, player_one, list)
     player_group.clear(surface, background)
     player_zero.rectChange()
     player_one.rectChange()
-    '''game interface'''
+
+    randombox1.rectChange()
+    randombox2.rectChange()
+    randombox3.rectChange()
+    randombox4.rectChange()
+    randombox5.rectChange()
+    randombox6.rectChange()
+    '''distributed positions'''
+
+
     while running:
         clock.tick(60)
         left = False
@@ -129,13 +171,29 @@ def main():
             down1 = False
 
         player_group.clear(surface, background)
+        if len(gadgets_group) > 0:
+            pygame.sprite.groupcollide(player_group, gadgets_group, False, True, collided=pygame.sprite.collide_circle)
+
         player_zero.update(g, top, down, right, left)
         player_one.update(g, top1, down1, right1, left1)
+        if markup.get_item_at(player_one.row, player_one.col) == 'p':
+            player_one.chance+=1
+            player_one.getGadget()
+            markup.set_item_at(player_one.row, player_one.col, ' ')
+
+        if markup.get_item_at(player_zero.row, player_zero.col) == 'p':
+            player_zero.chance+=1
+            player_zero.getGadget()
+            markup.set_item_at(player_zero.row, player_zero.col, ' ')
+
         if markup.get_item_at(player_one.row, player_one.col) == 'f' or markup.get_item_at(player_zero.row, player_zero.col) == 'f':
             running = False
 
         player_group.draw(surface)
+        gadgets_group.draw(surface)
         pygame.display.flip()
+        '''game loop'''
+
     while final :
         clock.tick(30)
         for event in pygame.event.get():
@@ -146,12 +204,13 @@ def main():
                     final = False
         surface.blit(background_final, (0, 0))
         pygame.display.flip()
+        '''Game Over'''
 
 
 
 
 
-def display_grid(g, markup, screen, player_zero, player_one):
+def display_grid(g, markup, screen, player_zero, player_one, gad_list):
     for row in range(g.num_rows):
         for col in range(g.num_columns):
             c = g.cell_at(row, col)
@@ -189,12 +248,16 @@ def display_grid(g, markup, screen, player_zero, player_one):
                                        7,  #radius
                                        0)  #filled
                     player_one.directMoveViaLoc(cell_x+16.5, cell_y+16.5)
-                if value == 'p':  # Player
+                if value == 'p':  # Gadgets
                     pygame.draw.circle(screen,
                                        (255,255,255),
                                        (cell_x+15,cell_y+15),
                                        7,  #radius
                                        0)  #filled
+                    if len(gad_list) != 0:
+                        gad_list[0].directMoveViaLoc(cell_x+16.5, cell_y+16.5)
+                        gad_list.pop(0)
+
                 if isinstance(value, list) and len(value) == 3:
                     pygame.draw.rect(screen,
                                      value,  # color

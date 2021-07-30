@@ -469,7 +469,6 @@ def aldous_broder(grid):
                 visited.append(target)
             cur = target
             iteration_count += 1
-    print(f'Aldous-Broder executed on a grid of size {grid.size()} in {iteration_count} steps.')
     
 def wilson(grid):
     ''' Wilson's algorithm is a random-walk algorithm.
@@ -665,5 +664,4 @@ def ABWilson(grid, change=0.5):
                     # if cell not in path, great, add it to path
                     else: 
                         cur = target
-                        path.append(cur)   
-    print(f'Aldous-Broder Wilson executed on a grid of size {grid.size()} in {iteration_count} steps.')
+                        path.append(cur)
