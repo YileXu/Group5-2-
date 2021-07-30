@@ -14,14 +14,13 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
         self.col = (int)(self.loc_x + 15.5) // 32 -1
         self.row = (int)(self.loc_y + 15.5) // 32 -1
-        self.posses = {possess_trans: False,
-                       possess_bomb:False,
-                       possess_mine: False,
-                       possess_conv:False,
-                       possess_pass: False,
-                       possess_trap:False
+        self.posses = {0: False,
+                       1: False,
+                       2: False,
+                       3: False,
+                       4: False,
+                       5: False
                        }
-        self.pos= [possess_trans, possess_bomb, possess_mine, possess_conv, possess_pass, possess_trap]
         self.chance = 0
 
     def directMoveViaColRow(self, col, row):
