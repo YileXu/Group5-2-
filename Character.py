@@ -16,7 +16,14 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
         self.col = (int)(self.loc_x + 15.5) // 32 - 1
         self.row = (int)(self.loc_y + 15.5) // 32 - 1
+
         self.prop = 0
+        self.prev_col = self.col
+        self.prev_row = self.row
+        self.cross_privilege = False
+        self.teleporting = False
+        self.teleport_col = self.col
+        self.teleport_row = self.row
 
     def directMoveViaColRow(self, col, row):
         self.col = col
@@ -32,45 +39,110 @@ class Player(pygame.sprite.Sprite):
         self.loc_y = loc_y
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 
-    def update(self, g, top, down, right, left):
+    def update(self, g, top, down, right, left, prop_use, markup):
         #  g 已经经过算法生成
         if top:
             if g.cell_at(self.row, self.col).north != None:
-                if g.cell_at(self.row, self.col).is_linked(g.cell_at(self.row-1, self.col)):
+                if not self.teleporting and (self.cross_privilege or g.cell_at(self.row, self.col).is_linked(g.cell_at((int)(self.loc_y - self.vv + 15.5) // 32 - 1, self.col))):
+                    self.prev_row = self.row
+                    self.prev_col = self.col
                     self.loc_y -= self.vv
                     self.row = (int)(self.loc_y + 15.5) // 32 - 1
                     self.rect = self.image.get_rect(
                         center=(self.loc_x, self.loc_y))
+                    self.cross_privilege = False
+                elif self.teleporting and self.teleport_row > self.row-2:
+                    self.teleport_row -= 1
 
         if down:
             if g.cell_at(self.row, self.col).south != None:
-                if g.cell_at(self.row, self.col).is_linked(g.cell_at(self.row + 1, self.col)):
+                if not self.teleporting and (self.cross_privilege or g.cell_at(self.row, self.col).is_linked(g.cell_at((int)(self.loc_y + self.vv + 15.5) // 32 - 1, self.col))):
+                    self.prev_row = self.row
+                    self.prev_col = self.col
                     self.loc_y += self.vv
                     self.row = (int)(self.loc_y + 15.5) // 32 - 1
                     self.rect = self.image.get_rect(
                         center=(self.loc_x, self.loc_y))
+                    self.cross_privilege = False
+                elif self.teleporting and self.teleport_row < self.row+2:
+                    self.teleport_row += 1
 
         if left:
             if g.cell_at(self.row, self.col).west != None:
-                if g.cell_at(self.row, self.col).is_linked(g.cell_at(self.row, self.col - 1)):
+                if not self.teleporting and (self.cross_privilege or g.cell_at(self.row, self.col).is_linked(g.cell_at(self.row, (int)(self.loc_x - self.hv + 15.5) // 32 - 1))):
+                    self.prev_col = self.col
+                    self.prev_row = self.row
                     self.loc_x -= self.hv
                     self.col = (int)(self.loc_x + 15.5) // 32 - 1
                     self.rect = self.image.get_rect(
                         center=(self.loc_x, self.loc_y))
+                    self.cross_privilege = False
+                elif self.teleporting and self.teleport_col > self.col-2:
+                    self.teleport_col -= 1
 
         if right:
             if g.cell_at(self.row, self.col).east != None:
-                if g.cell_at(self.row, self.col).is_linked(g.cell_at(self.row, self.col + 1)):
+                if not self.teleporting and (self.cross_privilege or g.cell_at(self.row, self.col).is_linked(g.cell_at(self.row, (int)(self.loc_x + self.hv + 15.5) // 32 - 1))):
+                    self.prev_col = self.col
+                    self.prev_row = self.row
                     self.loc_x += self.hv
                     self.col = (int)(self.loc_x + 15.5) // 32 - 1
                     self.rect = self.image.get_rect(
                         center=(self.loc_x, self.loc_y))
+                    self.cross_privilege = False
+                elif self.teleporting and self.teleport_col < self.col+2:
+                    self.teleport_col += 1
+
+        if prop_use:
+
+            if self.prop == 1:
+                # converse
+                self.hv *= -1
+                self.vv *= -1
+                self.prop = 0
+            elif self.prop == 2:
+                # bomb
+                markup.set_item_at(self.prev_row, self.prev_col, 'b')
+                print("put bomb at", self.prev_row, self.prev_col)
+                print("I am at", self.row, self.col)
+                self.prop = 0
+            elif self.prop == 3:
+                # cross
+                self.cross_privilege = True
+                self.prop = 0
+            elif self.prop == 4:
+                # teleport
+                if not self.teleporting:
+                    self.teleporting = True
+                    self.teleport_col = self.col
+                    self.teleport_row = self.row
+                    print("teleporting")
+                else:
+                    self.directMoveViaColRow(
+                        self.teleport_col, self.teleport_row)
+                    self.teleporting = False
+                    print("teleport done")
+                    self.prop = 0
+            elif self.prop == 5:
+                # long dist bomb
+                if not self.teleporting:
+                    self.teleporting = True
+                    self.teleport_col = self.col
+                    self.teleport_row = self.row
+                    print("teleporting bomb")
+                else:
+                    markup.set_item_at(self.teleport_row,
+                                       self.teleport_col, 'b')
+                    self.teleporting = False
+                    print("teleport bomb done")
+                    self.prop = 0
 
     def rectChange(self):
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 
     def getGadget(self):
         self.prop = random.randint(1, 5)
+        print("get prop", self.prop)
 
 
 class Randombox(pygame.sprite.Sprite):

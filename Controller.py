@@ -114,10 +114,12 @@ def main():
         top = False
         right = False
         down = False
+        prop_use = False
         left1 = False
         top1 = False
         right1 = False
         down1 = False
+        prop_use1 = False
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -126,7 +128,8 @@ def main():
                 if event.key == pygame.K_ESCAPE:
                     running = False
                 if event.key == K_q:  # Quit
-                    running = False
+                    if player_one.prop != 0:
+                        pass
                 if event.key == K_UP:
                     top = True
                 if event.key == K_LEFT:
@@ -135,6 +138,8 @@ def main():
                     down = True
                 if event.key == K_RIGHT:
                     right = True
+                if event.key == K_m:
+                    prop_use = True
                 if event.key == K_w:
                     top1 = True
                 if event.key == K_a:
@@ -143,6 +148,8 @@ def main():
                     down1 = True
                 if event.key == K_d:
                     right1 = True
+                if event.key == K_q:
+                    prop_use1 = True
 
             if event.type == pygame.KEYUP:
                 if event.key == K_l:  # longest path
@@ -155,6 +162,8 @@ def main():
                     top = False
                 if event.key == pygame.K_DOWN:
                     down = False
+                if event.key == K_m:
+                    prop_use = False
                 if event.key == K_w:
                     top1 = False
                 if event.key == K_a:
@@ -163,6 +172,9 @@ def main():
                     down1 = False
                 if event.key == K_d:
                     right1 = False
+                if event.key == K_q:
+                    prop_use1 = False
+
         if left and right:
             left = False
             right = False
@@ -183,16 +195,30 @@ def main():
             pygame.sprite.groupcollide(
                 player_group, gadgets_group, False, True, collided=pygame.sprite.collide_circle)
 
-        player_zero.update(g, top, down, right, left)
-        player_one.update(g, top1, down1, right1, left1)
-        if markup.get_item_at(player_one.row, player_one.col) == 'p':
-            player_one.chance += 1
-            player_one.getGadget()
-            markup.set_item_at(player_one.row, player_one.col, ' ')
+        player_zero.update(g, top, down, right, left, prop_use, markup)
+        player_one.update(g, top1, down1, right1, left1, prop_use1, markup)
 
-        if markup.get_item_at(player_zero.row, player_zero.col) == 'p':
-            player_zero.getGadget()
-            markup.set_item_at(player_zero.row, player_zero.col, ' ')
+        for player in player_group:
+            if markup.get_item_at(player.row, player.col) == 'p':
+                player.getGadget()
+                markup.set_item_at(player.row, player.col, ' ')
+            elif markup.get_item_at(player.row, player.col) == 'b':  # bomb detection
+                print("meet bomb")
+                cur_cell = g.grid[player.row][player.col]
+                while True:
+                    row_offset = random.randint(-1, 1)
+                    col_offset = random.randint(-1, 1)
+                    if row_offset == 0 and col_offset == 0:
+                        continue
+                    elif (row_offset == -1 and cur_cell.north == None) or (row_offset == 1 and cur_cell.south == None):
+                        continue
+                    elif (col_offset == -1 and cur_cell.west == None) or (col_offset == 1 and cur_cell.east == None):
+                        continue
+                    markup.set_item_at(player.row, player.col, ' ')
+                    player.directMoveViaColRow(
+                        player.col+col_offset, player.row+row_offset)
+                    print("boom, I am at", player.row, player.col)
+                    break
 
         if markup.get_item_at(player_one.row, player_one.col) == 'f' or markup.get_item_at(player_zero.row, player_zero.col) == 'f':
             running = False
@@ -277,9 +303,12 @@ def display_grid(g, markup, screen, player_zero, player_one, gad_list, icelist, 
                                        (cell_x+15, cell_y+15),
                                        7,  # radius
                                        0)  # filled
+                    print("draw circle")
+                    print(len(gad_list), "before")
                     if len(gad_list) != 0:
                         gad_list[0].directMoveViaLoc(cell_x+16.5, cell_y+16.5)
                         gad_list.pop(0)
+                        print(len(gad_list), "after")
 
                 if isinstance(value, list) and len(value) == 3:
                     pygame.draw.rect(screen,
