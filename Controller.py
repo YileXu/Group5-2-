@@ -1,12 +1,18 @@
 import pygame.gfxdraw
 import Maze
 import random
-import  sys
+import sys
 import Character
 import pygame
 from pygame.locals import *
 
+
 def main():
+
+    grid_row = 18
+    grid_col = 24
+    gadgets_num = 6
+
     pygame.init()
     WindowSize_x = 800
     WindowSize_y = 670
@@ -15,14 +21,19 @@ def main():
     background = pygame.image.load('背景图片/瓷砖.jpg').convert()
     background_zero = pygame.image.load('背景图片/menu.png').convert()
     background_final = pygame.image.load('gameover.png').convert()
-    player_zero_sprite = pygame.image.load('sprites/players/Pepper-Pete.png').convert()
-    player_one_sprite = pygame.image.load('sprites/players/Luigi.png').convert()
-    player_zero_sprite = pygame.transform.scale(player_zero_sprite, (int(player_zero_sprite.get_size()[0]/4), int(player_zero_sprite.get_size()[1]/4)))
-    player_one_sprite = pygame.transform.scale(player_one_sprite, (int(player_one_sprite.get_size()[0]/4), int(player_one_sprite.get_size()[1]/4)))
-    background_zero = pygame.transform.scale(background_zero,(int(background_zero.get_size()[0]*2), int(background_zero.get_size()[1]*2.3)) )
-    background_final = pygame.transform.scale(background_final, (int(background_final.get_size()[0] * 2.2), int(background_final.get_size()[1] * 3)))
-    surface.blit(background,(0,0))
-
+    player_zero_sprite = pygame.image.load(
+        'sprites/players/Pepper-Pete.png').convert()
+    player_one_sprite = pygame.image.load(
+        'sprites/players/Luigi.png').convert()
+    player_zero_sprite = pygame.transform.scale(player_zero_sprite, (int(
+        player_zero_sprite.get_size()[0]/4), int(player_zero_sprite.get_size()[1]/4)))
+    player_one_sprite = pygame.transform.scale(player_one_sprite, (int(
+        player_one_sprite.get_size()[0]/4), int(player_one_sprite.get_size()[1]/4)))
+    background_zero = pygame.transform.scale(background_zero, (int(
+        background_zero.get_size()[0]*2), int(background_zero.get_size()[1]*2.3)))
+    background_final = pygame.transform.scale(background_final, (int(
+        background_final.get_size()[0] * 2.2), int(background_final.get_size()[1] * 3)))
+    surface.blit(background, (0, 0))
 
     '''drawing the background and players initially'''
 
@@ -32,43 +43,12 @@ def main():
     player_group.add(player_zero, player_one)
 
     gadgets_group = pygame.sprite.Group()
-    randombox1 = Character.Randombox()
-    randombox2 = Character.Randombox()
-    randombox3 = Character.Randombox()
-    randombox4 = Character.Randombox()
-    randombox5 = Character.Randombox()
-    randombox6 = Character.Randombox()
-
-    land_group = pygame.sprite.Group()
-    ice_list = []
-    for i in range(20):
-        ice = Character.Ice()
-        ice_list.append(ice)
-        land_group.add(ice)
-    water_list = []
-    for i in range(40):
-        water = Character.Water()
-        water_list.append(water)
-        land_group.add(water)
-    '''mine = Character.Mine()
-    transporter = Character.Transporter()
-    bomb = Character.Bomb()
-    converse = Character.Converse()
-    passwall = Character.PassWall()
-    trap = Character.Trap()'''
-
-    gadgets_group.add(randombox1, randombox2, randombox3, randombox4, randombox5, randombox6)
-    '''gadgets_group.add(mine)
-    gadgets_group.add(transporter)
-    gadgets_group.add(bomb)
-    gadgets_group.add(converse)
-    gadgets_group.add(passwall)
-    gadgets_group.add(trap)'''
-
+    for i in range(gadgets_num):
+        gadgets_group.add(Character.Randombox())
 
     '''initialize the players'''
 
-    clock= pygame.time.Clock()
+    clock = pygame.time.Clock()
     running = True
     state = 0
     final = True
@@ -89,11 +69,34 @@ def main():
     '''initial interface'''
 
     surface.blit(background, (0, 0))
-    g = Maze.Grid(18, 24)
+    g = Maze.Grid(grid_row, grid_col)
     Maze.wilson(g)
     markup = Maze.FlagAndPlayersMarkup(g)
-    list = [randombox1, randombox2, randombox3, randombox4, randombox5, randombox6]
-    display_grid(g, markup, surface, player_zero, player_one, list, ice_list, water_list)
+    list = []
+    for randombox in gadgets_group:
+        list.append(randombox)
+    print("len of list", len(list))
+    land_group = pygame.sprite.Group()
+    ice_count = 0
+    water_count = 0
+    for cell in markup.cost:
+        cost = markup.cost[cell]
+        if cost == 2:
+            ice_count += 1
+        elif cost == 3:
+            water_count += 1
+    ice_list = []
+    for i in range(ice_count):
+        ice = Character.Ice()
+        ice_list.append(ice)
+        land_group.add(ice)
+    water_list = []
+    for i in range(water_count):
+        water = Character.Water()
+        water_list.append(water)
+        land_group.add(water)
+    display_grid(g, markup, surface, player_zero,
+                 player_one, list, ice_list, water_list)
     player_group.clear(surface, background)
     player_zero.rectChange()
     player_one.rectChange()
@@ -101,15 +104,9 @@ def main():
         ice.rectChange()
     for water in water_list:
         water.rectChange()
-
-    randombox1.rectChange()
-    randombox2.rectChange()
-    randombox3.rectChange()
-    randombox4.rectChange()
-    randombox5.rectChange()
-    randombox6.rectChange()
+    for randombox in gadgets_group:
+        randombox.rectChange()
     '''distributed positions'''
-
 
     while running:
         clock.tick(60)
@@ -180,32 +177,33 @@ def main():
             down1 = False
 
         player_group.clear(surface, background)
-        pygame.sprite.groupcollide(player_group, land_group, False, False, collided=pygame.sprite.collide_rect)
+        pygame.sprite.groupcollide(
+            player_group, land_group, False, False, collided=pygame.sprite.collide_rect)
         if len(gadgets_group) > 0:
-            pygame.sprite.groupcollide(player_group, gadgets_group, False, True, collided=pygame.sprite.collide_circle)
+            pygame.sprite.groupcollide(
+                player_group, gadgets_group, False, True, collided=pygame.sprite.collide_circle)
 
         player_zero.update(g, top, down, right, left)
         player_one.update(g, top1, down1, right1, left1)
         if markup.get_item_at(player_one.row, player_one.col) == 'p':
-            player_one.chance+=1
+            player_one.chance += 1
             player_one.getGadget()
             markup.set_item_at(player_one.row, player_one.col, ' ')
 
         if markup.get_item_at(player_zero.row, player_zero.col) == 'p':
-            player_zero.chance+=1
             player_zero.getGadget()
             markup.set_item_at(player_zero.row, player_zero.col, ' ')
 
         if markup.get_item_at(player_one.row, player_one.col) == 'f' or markup.get_item_at(player_zero.row, player_zero.col) == 'f':
             running = False
 
-        player_group.draw(surface)
         land_group.draw(surface)
         gadgets_group.draw(surface)
+        player_group.draw(surface)
         pygame.display.flip()
         '''game loop'''
 
-    while final :
+    while final:
         clock.tick(30)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -216,9 +214,6 @@ def main():
         surface.blit(background_final, (0, 0))
         pygame.display.flip()
         '''Game Over'''
-
-
-
 
 
 def display_grid(g, markup, screen, player_zero, player_one, gad_list, icelist, waterlist):
@@ -258,30 +253,30 @@ def display_grid(g, markup, screen, player_zero, player_one, gad_list, icelist, 
                                        0)  # filled
                 if value == 'f':  # Flag
                     pygame.draw.circle(screen,
-                                       (255,50,50),
-                                       (cell_x+15,cell_y+15),
-                                       7,  #radius
-                                       0)  #filled
+                                       (255, 50, 50),
+                                       (cell_x+15, cell_y+15),
+                                       7,  # radius
+                                       0)  # filled
                 if value == 'p0':  # Player
                     pygame.draw.circle(screen,
-                                       (50,255,50),
-                                       (cell_x+15,cell_y+15),
-                                       7,  #radius
-                                       0)  #filled
+                                       (50, 255, 50),
+                                       (cell_x+15, cell_y+15),
+                                       7,  # radius
+                                       0)  # filled
                     player_zero.directMoveViaLoc(cell_x+16.5, cell_y+16.5)
                 if value == 'p1':  # Player
                     pygame.draw.circle(screen,
-                                       (50,50,255),
-                                       (cell_x+15,cell_y+15),
-                                       7,  #radius
-                                       0)  #filled
+                                       (50, 50, 255),
+                                       (cell_x+15, cell_y+15),
+                                       7,  # radius
+                                       0)  # filled
                     player_one.directMoveViaLoc(cell_x+16.5, cell_y+16.5)
                 if value == 'p':  # Gadgets
                     pygame.draw.circle(screen,
-                                       (255,255,255),
-                                       (cell_x+15,cell_y+15),
-                                       7,  #radius
-                                       0)  #filled
+                                       (255, 255, 255),
+                                       (cell_x+15, cell_y+15),
+                                       7,  # radius
+                                       0)  # filled
                     if len(gad_list) != 0:
                         gad_list[0].directMoveViaLoc(cell_x+16.5, cell_y+16.5)
                         gad_list.pop(0)
@@ -307,9 +302,6 @@ def display_grid(g, markup, screen, player_zero, player_one, gad_list, icelist, 
                 pygame.gfxdraw.vline(screen,
                                      cell_x, cell_y, cell_y + 31,
                                      (255, 255, 255))
-
-
-
 
 
 if __name__ == "__main__":
