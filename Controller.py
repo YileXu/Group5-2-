@@ -4,6 +4,9 @@ import random
 import sys
 import Character
 import pygame
+import show_maze
+import Randombox
+import Land
 from pygame.locals import *
 
 
@@ -12,6 +15,8 @@ def main():
     grid_row = 18
     grid_col = 24
     gadgets_num = 6
+    player_one_auto_walk = False
+    player_zero_auto_walk = False
 
     pygame.init()
     WindowSize_x = 800
@@ -38,13 +43,13 @@ def main():
     '''drawing the background and players initially'''
 
     player_group = pygame.sprite.Group()
-    player_zero = Character.Player(player_zero_sprite)
-    player_one = Character.Player(player_one_sprite)
+    player_zero = Character.Player('player_zero', player_zero_sprite)
+    player_one = Character.Player('player_one', player_one_sprite)
     player_group.add(player_zero, player_one)
 
     gadgets_group = pygame.sprite.Group()
     for i in range(gadgets_num):
-        gadgets_group.add(Character.Randombox())
+        gadgets_group.add(Randombox.Randombox())
 
     '''initialize the players'''
 
@@ -87,16 +92,16 @@ def main():
             water_count += 1
     ice_list = []
     for i in range(ice_count):
-        ice = Character.Ice()
+        ice = Land.Ice()
         ice_list.append(ice)
         land_group.add(ice)
     water_list = []
     for i in range(water_count):
-        water = Character.Water()
+        water = Land.Water()
         water_list.append(water)
         land_group.add(water)
-    display_grid(g, markup, surface, player_zero,
-                 player_one, list, ice_list, water_list)
+    show_maze.display_grid(g, markup, surface, player_zero,
+                           player_one, list, ice_list, water_list)
     player_group.clear(surface, background)
     player_zero.rectChange()
     player_one.rectChange()
@@ -195,8 +200,15 @@ def main():
             pygame.sprite.groupcollide(
                 player_group, gadgets_group, False, True, collided=pygame.sprite.collide_circle)
 
-        player_zero.update(g, top, down, right, left, prop_use, markup)
-        player_one.update(g, top1, down1, right1, left1, prop_use1, markup)
+        if not player_zero_auto_walk:
+            player_zero.update(g, top, down, right, left, prop_use, markup)
+        else:
+            player_zero.auto_walk_dir_update(top, down, right, left)
+        if not player_one_auto_walk:
+            player_one.update(g, top1, down1, right1, left1, prop_use1, markup)
+        else:
+            player_one.auto_walk_dir_update(top1, down1, right1, left1)
+        '''ice walk and normal walk'''
 
         for player in player_group:
             if markup.get_item_at(player.row, player.col) == 'p':
@@ -220,7 +232,32 @@ def main():
                     print("boom, I am at", player.row, player.col)
                     break
 
+        if player_zero_auto_walk and markup.get_item_in(player_zero.row, player_zero.col) == 1:
+            player_zero_auto_walk = False
+            Character.exitFlag0 = True
+        if player_one_auto_walk and markup.get_item_in(player_one.row, player_one.col) == 1:
+            player_one_auto_walk = False
+            Character.exitFlag1 = True
+
+        if not player_zero_auto_walk and markup.get_item_in(player_zero.row, player_zero.col) == 2:
+            player_zero_auto_walk = True
+            Character.exitFlag0 = False
+            thread0 = Character.IceThread(
+                0, "Thread-0", player_zero, g, prop_use, markup)
+            thread0.start()
+        if not player_one_auto_walk and markup.get_item_in(player_one.row, player_one.col) == 2:
+            player_one_auto_walk = True
+            Character.exitFlag1 = False
+            thread1 = Character.IceThread(
+                1, "Thread-1", player_one, g, prop_use, markup)
+            thread1.start()
+        '''ice walk'''
+
         if markup.get_item_at(player_one.row, player_one.col) == 'f' or markup.get_item_at(player_zero.row, player_zero.col) == 'f':
+            player_zero_auto_walk = False
+            Character.exitFlag0 = True
+            player_one_auto_walk = False
+            Character.exitFlag1 = True
             running = False
 
         land_group.draw(surface)
@@ -240,97 +277,6 @@ def main():
         surface.blit(background_final, (0, 0))
         pygame.display.flip()
         '''Game Over'''
-
-
-def display_grid(g, markup, screen, player_zero, player_one, gad_list, icelist, waterlist):
-    for row in range(g.num_rows):
-        for col in range(g.num_columns):
-            c = g.cell_at(row, col)
-            cell_x = col * 32+1
-            cell_y = row * 32+1
-
-            # Draw top row
-            if markup:
-                value = markup.get_item_at(row, col)
-                cos = markup.get_item_in(row, col)
-                if not value:
-                    continue
-                if cos == 2:    # Ice
-                    pygame.draw.circle(screen,
-                                       (135, 206, 235),
-                                       (cell_x + 15, cell_y + 15),
-                                       9,  # radius
-                                       0)  # filled
-                    icelist[0].directMoveViaLoc(cell_x + 16.5, cell_y + 16.5)
-                    icelist.pop(0)
-                if cos == 3:    # Water
-                    pygame.draw.circle(screen,
-                                       (65, 105, 225),
-                                       (cell_x + 15, cell_y + 15),
-                                       9,  # radius
-                                       0)  # filled
-                    waterlist[0].directMoveViaLoc(cell_x + 16.5, cell_y + 16.5)
-                    waterlist.pop(0)
-                if value == '*':  # Path marker
-                    pygame.draw.circle(screen,
-                                       (255, 255, 50),
-                                       (cell_x + 15, cell_y + 15),
-                                       7,  # radius
-                                       0)  # filled
-                if value == 'f':  # Flag
-                    pygame.draw.circle(screen,
-                                       (255, 50, 50),
-                                       (cell_x+15, cell_y+15),
-                                       7,  # radius
-                                       0)  # filled
-                if value == 'p0':  # Player
-                    pygame.draw.circle(screen,
-                                       (50, 255, 50),
-                                       (cell_x+15, cell_y+15),
-                                       7,  # radius
-                                       0)  # filled
-                    player_zero.directMoveViaLoc(cell_x+16.5, cell_y+16.5)
-                if value == 'p1':  # Player
-                    pygame.draw.circle(screen,
-                                       (50, 50, 255),
-                                       (cell_x+15, cell_y+15),
-                                       7,  # radius
-                                       0)  # filled
-                    player_one.directMoveViaLoc(cell_x+16.5, cell_y+16.5)
-                if value == 'p':  # Gadgets
-                    pygame.draw.circle(screen,
-                                       (255, 255, 255),
-                                       (cell_x+15, cell_y+15),
-                                       7,  # radius
-                                       0)  # filled
-                    print("draw circle")
-                    print(len(gad_list), "before")
-                    if len(gad_list) != 0:
-                        gad_list[0].directMoveViaLoc(cell_x+16.5, cell_y+16.5)
-                        gad_list.pop(0)
-                        print(len(gad_list), "after")
-
-                if isinstance(value, list) and len(value) == 3:
-                    pygame.draw.rect(screen,
-                                     value,  # color
-                                     (cell_x, cell_y, 32, 32))
-
-            if not c.north or not c.is_linked(c.north):
-                pygame.gfxdraw.hline(screen,
-                                     cell_x, cell_x + 31, cell_y,
-                                     (255, 255, 255))
-            if not c.south or not c.is_linked(c.south):
-                pygame.gfxdraw.hline(screen,
-                                     cell_x, cell_x + 31, cell_y + 31,
-                                     (255, 255, 255))
-            if not c.east or not c.is_linked(c.east):
-                pygame.gfxdraw.vline(screen,
-                                     cell_x + 31, cell_y, cell_y + 31,
-                                     (255, 255, 255))
-            if not c.west or not c.is_linked(c.west):
-                pygame.gfxdraw.vline(screen,
-                                     cell_x, cell_y, cell_y + 31,
-                                     (255, 255, 255))
 
 
 if __name__ == "__main__":
