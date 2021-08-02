@@ -232,10 +232,10 @@ def main():
                     print("boom, I am at", player.row, player.col)
                     break
 
-        if player_zero_auto_walk and markup.get_item_in(player_zero.row, player_zero.col) == 1:
+        if player_zero_auto_walk and markup.get_item_in(player_zero.row, player_zero.col) != 2:
             player_zero_auto_walk = False
             Character.exitFlag0 = True
-        if player_one_auto_walk and markup.get_item_in(player_one.row, player_one.col) == 1:
+        if player_one_auto_walk and markup.get_item_in(player_one.row, player_one.col) != 2:
             player_one_auto_walk = False
             Character.exitFlag1 = True
 
