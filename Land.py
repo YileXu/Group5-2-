@@ -6,7 +6,7 @@ class Land(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.loc_x = 16.5
         self.loc_y = 16.5
-        self.image = pygame.Surface((20, 20))
+        self.image = pygame.Surface((28.5, 28.5))
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 
         self.col = (int)(self.loc_x + 15.5) // 32 - 1
@@ -36,6 +36,6 @@ class Water(Land):
 
     def __init__(self):
         super().__init__()
-        self.gad_surf = pygame.image.load('sprites/道具/水.jpg').convert()
+        self.gad_surf = pygame.image.load('sprites/道具/water.png').convert()
         self.image.blit(self.gad_surf, (0, 0), (0, 0, self.gad_surf.get_rect(
         ).size[0], self.gad_surf.get_rect().size[1]))

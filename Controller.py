@@ -20,7 +20,7 @@ def main():
 
     pygame.init()
     WindowSize_x = 800
-    WindowSize_y = 670
+    WindowSize_y = 730
     surface = pygame.display.set_mode([WindowSize_x, WindowSize_y])
     pygame.display.set_caption('CATCH THE FLAG')
     background = pygame.image.load('背景图片/瓷砖.jpg').convert()
