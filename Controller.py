@@ -12,15 +12,15 @@ from pygame.locals import *
 
 def main():
 
-    grid_row = 18
-    grid_col = 24
+    grid_row = 20
+    grid_col = 25
     gadgets_num = 6
     player_one_auto_walk = False
     player_zero_auto_walk = False
 
     pygame.init()
-    WindowSize_x = 800
-    WindowSize_y = 670
+    WindowSize_x = 802
+    WindowSize_y = 802
     surface = pygame.display.set_mode([WindowSize_x, WindowSize_y])
     pygame.display.set_caption('CATCH THE FLAG')
     background = pygame.image.load('背景图片/瓷砖.jpg').convert()
@@ -267,12 +267,12 @@ def main():
         player_group.draw(surface)
         pygame.display.flip()
         '''game loop'''
+    player_zero_auto_walk = False
+    Character.exitFlag0 = True
+    player_one_auto_walk = False
+    Character.exitFlag1 = True
 
     while final:
-        player_zero_auto_walk = False
-        Character.exitFlag0 = True
-        player_one_auto_walk = False
-        Character.exitFlag1 = True
         clock.tick(30)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
