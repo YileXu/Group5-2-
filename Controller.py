@@ -65,7 +65,6 @@ def main():
     gadgets_group.add(passwall)
     gadgets_group.add(trap)'''
 
-
     '''initialize the players'''
 
     clock= pygame.time.Clock()
