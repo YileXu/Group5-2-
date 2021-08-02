@@ -12,15 +12,20 @@ from pygame.locals import *
 
 def main():
 
-    grid_row = 18
-    grid_col = 24
+    grid_row = 20
+    grid_col = 25
     gadgets_num = 6
     player_one_auto_walk = False
     player_zero_auto_walk = False
 
     pygame.init()
+
     WindowSize_x = 800
     WindowSize_y = 730
+
+    WindowSize_x = 802
+    WindowSize_y = 802
+
     surface = pygame.display.set_mode([WindowSize_x, WindowSize_y])
     pygame.display.set_caption('CATCH THE FLAG')
     background = pygame.image.load('背景图片/瓷砖.jpg').convert()
@@ -110,10 +115,12 @@ def main():
     g = Maze.Grid(grid_row, grid_col)
     Maze.wilson(g)
     markup = Maze.FlagAndPlayersMarkup(g)
-    list = []
+
+    list1 = []
     for randombox in gadgets_group:
-        list.append(randombox)
-    print("len of list", len(list))
+        list1.append(randombox)
+    print("len of list", len(list1))
+
     land_group = pygame.sprite.Group()
     ice_count = 0
     water_count = 0
@@ -134,7 +141,7 @@ def main():
         water_list.append(water)
         land_group.add(water)
     show_maze.display_grid(g, markup, surface, player_zero,
-                           player_one, list, ice_list, water_list)
+                           player_one, list1, ice_list, water_list)
     player_group.clear(surface, background)
     player_zero.rectChange()
     player_one.rectChange()
@@ -265,10 +272,10 @@ def main():
                     print("boom, I am at", player.row, player.col)
                     break
 
-        if player_zero_auto_walk and markup.get_item_in(player_zero.row, player_zero.col) == 1:
+        if player_zero_auto_walk and markup.get_item_in(player_zero.row, player_zero.col) != 2:
             player_zero_auto_walk = False
             Character.exitFlag0 = True
-        if player_one_auto_walk and markup.get_item_in(player_one.row, player_one.col) == 1:
+        if player_one_auto_walk and markup.get_item_in(player_one.row, player_one.col) != 2:
             player_one_auto_walk = False
             Character.exitFlag1 = True
 
@@ -298,6 +305,10 @@ def main():
         player_group.draw(surface)
         pygame.display.flip()
         '''game loop'''
+    player_zero_auto_walk = False
+    Character.exitFlag0 = True
+    player_one_auto_walk = False
+    Character.exitFlag1 = True
 
     while final:
         clock.tick(30)

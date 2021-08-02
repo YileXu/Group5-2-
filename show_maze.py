@@ -55,6 +55,9 @@ def display_grid(g, markup, screen, player_zero, player_one, gad_list, icelist, 
                                        7,  # radius
                                        0)  # filled
                     player_one.directMoveViaLoc(cell_x+16.5, cell_y+16.5)
+
+
+
                 if value == 'p':  # Gadgets
                     pygame.draw.circle(screen,
                                        (255, 255, 255),
@@ -67,6 +70,9 @@ def display_grid(g, markup, screen, player_zero, player_one, gad_list, icelist, 
                         gad_list[0].directMoveViaLoc(cell_x+16.5, cell_y+16.5)
                         gad_list.pop(0)
                         print(len(gad_list), "after")
+
+
+
 
                 if isinstance(value, list) and len(value) == 3:
                     pygame.draw.rect(screen,
