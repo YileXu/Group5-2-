@@ -235,6 +235,7 @@ class Markup:
             return self.marks.get(cell)
         else:
             raise IndexError
+
     def get_item_in(self, row, column):
         assert row >= 0 and row < self.grid.num_rows
         assert column >= 0 and column < self.grid.num_columns
@@ -243,7 +244,6 @@ class Markup:
             return self.cost.get(cell)
         else:
             raise IndexError
-
 
     def max(self):
         ''' Return the cell with the largest markup value. '''
@@ -270,7 +270,8 @@ class DijkstraMarkup(Markup):
         cur_water_count = 0
         while cur_water_count < water_count:
             visited = []
-            cur = self.grid.grid[random.randint(0, self.grid.num_rows-1)][random.randint(0, self.grid.num_columns-1)] #random cell
+            cur = self.grid.grid[random.randint(
+                0, self.grid.num_rows-1)][random.randint(0, self.grid.num_columns-1)]  # random cell
             visited.append(cur)
             while len(visited) < water_per_center:
                 randNum = random.randint(0, 3)
@@ -322,46 +323,6 @@ class DijkstraMarkup(Markup):
             Returns: Tuple of (cell, distance)
         '''
         return (self.max(), self.marks[self.max()])
-
-
-class ShortestPathMarkup(DijkstraMarkup):
-    ''' Given a starting cell and a goal cell, create a Markup that will
-        have the shortest path between those two cells marked.  
-    '''
-
-    def __init__(self, grid, start_cell, goal_cell,
-                 path_marker='*', non_path_marker=' '):
-        super().__init__(grid, start_cell)
-        mark_cells = []
-        cur = goal_cell
-        mark_cells.append(cur)
-        while cur != start_cell:
-            for neighbor in cur.all_links():
-                if self.marks[neighbor] < self.marks[cur]:
-                    cur = neighbor
-                    mark_cells.append(cur)
-                    break
-        for c in range(self.grid.num_columns):
-            for r in range(self.grid.num_rows):
-                if self.grid.grid[r][c] in mark_cells:
-                    self.marks[self.grid.grid[r][c]] = path_marker
-                else:
-                    self.marks[self.grid.grid[r][c]] = non_path_marker
-
-
-class LongestPathMarkup(ShortestPathMarkup):
-    ''' Create a markup with the longest path in the graph marked.
-        Note: Shortest path is dependent upon the start and target cells chosen.
-              This markup is the longest path to be found _anywhere_ in the maze.
-    '''
-
-    def __init__(self, grid, path_marker='*', non_path_marker=' '):
-        start_cell = grid.random_cell()
-        dm = DijkstraMarkup(grid, start_cell)
-        farthest, _ = dm.farthest_cell()
-        dm = DijkstraMarkup(grid, farthest)
-        next_farthest, _ = dm.farthest_cell()
-        super().__init__(grid, farthest, next_farthest, path_marker, non_path_marker)
 
 
 class ColorizedMarkup(Markup):
@@ -629,55 +590,6 @@ def wilson(grid):
     print(f' random cells choosen and {loops_removed} loops removed')
 
 
-def recursive_backtracker(grid, start_cell=None):
-    ''' Recursive Backtracker is a high-river maze algorithm.
-
-        1) if start_cell is None, choose a random cell for the start
-        2) Examine all neighbors and make a list of those that have not been visited
-           Note: you can tell it hasn't been visited if it is not linked to any cell
-        3) Randomly choose one of the cells from this list.  Link to and move to that 
-           neighbor
-        3a) If there are no neighbors in the list, then you must backtrack to the last
-            cell you visited and repeat.
-
-        Suggestion: Use an explicit stack.  You can write this implicitly (in fact,
-        the code will be quite short), but for large mazes you will be making lots of 
-        function calls and you risk running out of stack space.
-    '''
-    visited = []
-    stack = []
-    if start_cell != None:
-        cur = start_cell
-    else:
-        cur = grid.random_cell()
-    visited.append(cur)
-    stack.append(cur)
-    recursive_backtracker_runner(grid, cur, visited, stack)
-
-
-def recursive_backtracker_runner(grid, cur, visited, stack):
-    neighbor = []
-    if cur.north != None and cur.north not in visited:
-        neighbor.append(cur.north)
-    if cur.south != None and cur.south not in visited:
-        neighbor.append(cur.south)
-    if cur.east != None and cur.east not in visited:
-        neighbor.append(cur.east)
-    if cur.west != None and cur.west not in visited:
-        neighbor.append(cur.west)
-    if neighbor != []:
-        target = neighbor[random.randint(0, len(neighbor)-1)]
-        cur.link(target)
-        visited.append(target)
-        if len(visited) == grid.size():
-            return
-        stack.append(target)
-        recursive_backtracker_runner(grid, target, visited, stack)
-    else:
-        back = stack.pop()
-        recursive_backtracker_runner(grid, back, visited, stack)
-
-
 def ABWilson(grid, change=0.5):
     unvisited = []
     iteration_count = 0
@@ -746,4 +658,3 @@ def ABWilson(grid, change=0.5):
                         cur = target
                         path.append(cur)
                         path.append(cur)
-
