@@ -77,10 +77,12 @@ def main():
     g = Maze.Grid(grid_row, grid_col)
     Maze.wilson(g)
     markup = Maze.FlagAndPlayersMarkup(g)
-    list = []
+
+    list1 = []
     for randombox in gadgets_group:
-        list.append(randombox)
-    print("len of list", len(list))
+        list1.append(randombox)
+    print("len of list", len(list1))
+
     land_group = pygame.sprite.Group()
     ice_count = 0
     water_count = 0
@@ -101,7 +103,7 @@ def main():
         water_list.append(water)
         land_group.add(water)
     show_maze.display_grid(g, markup, surface, player_zero,
-                           player_one, list, ice_list, water_list)
+                           player_one, list1, ice_list, water_list)
     player_group.clear(surface, background)
     player_zero.rectChange()
     player_one.rectChange()
@@ -267,6 +269,10 @@ def main():
         '''game loop'''
 
     while final:
+        player_zero_auto_walk = False
+        Character.exitFlag0 = True
+        player_one_auto_walk = False
+        Character.exitFlag1 = True
         clock.tick(30)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
