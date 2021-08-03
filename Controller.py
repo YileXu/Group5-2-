@@ -22,7 +22,7 @@ def main():
 
 
     WindowSize_x = 802
-    WindowSize_y = 802
+    WindowSize_y = 750
 
     surface = pygame.display.set_mode([WindowSize_x, WindowSize_y])
     pygame.display.set_caption('CATCH THE FLAG')
@@ -158,9 +158,22 @@ def main():
     Playertwo_font = font.render('Player Two', True, clay, None)
     surface.blit(Playertwo_font, (540, 674), Playertwo_font.get_rect())
 
+    conv_surf = pygame.image.load('sprites/道具/反转.png').convert()
+    conv_surf = pygame.transform.scale(conv_surf, (conv_surf.get_rect().width//6, conv_surf.get_rect().height//6))
+    mine_surf = pygame.image.load('sprites/道具/地雷.png').convert()
+    mine_surf = pygame.transform.scale(mine_surf, (mine_surf.get_rect().width//6, mine_surf.get_rect().height//6))
 
+    pass_surf = pygame.image.load('sprites/道具/墙.png').convert()
+    pass_surf = pygame.transform.scale(pass_surf, (pass_surf.get_rect().width//6, pass_surf.get_rect().height//6))
 
+    tran_surf = pygame.image.load('sprites/道具/传送.png').convert()
+    tran_surf = pygame.transform.scale(tran_surf, (tran_surf.get_rect().width//6, tran_surf.get_rect().height//6))
 
+    bomb_surf = pygame.image.load('sprites/道具/炸弹.png').convert()
+    bomb_surf = pygame.transform.scale(bomb_surf, (bomb_surf.get_rect().width//6, bomb_surf.get_rect().height//6))
+
+    prop_img_list = [conv_surf, mine_surf, pass_surf, tran_surf, bomb_surf]
+    prop_size_list = [(0, 0, 8000, 6467), (0, 0, 4167, 4167), (0, 0, 1600, 1600), (0, 0, 617, 655), (0, 0, 500, 500)]
     '''Game Loop'''
     while running:
         clock.tick(60)
@@ -252,13 +265,29 @@ def main():
 
         if not player_zero_auto_walk:
             player_zero.update(g, top, down, right, left, prop_use, markup)
-        else:
+        else: 
             player_zero.auto_walk_dir_update(top, down, right, left)
         if not player_one_auto_walk:
             player_one.update(g, top1, down1, right1, left1, prop_use1, markup)
         else:
             player_one.auto_walk_dir_update(top1, down1, right1, left1)
         '''ice walk and normal walk'''
+
+
+        for i in range(5):
+            if player_one.prop == i+1:
+                area = pygame.Surface((50, 50))
+                area.blit(prop_img_list[i], (-20, -20), prop_size_list[i])
+                surface.blit(area, (290, 670), area.get_rect())
+            if player_zero.prop == i+1:
+                area = pygame.Surface((50, 50))
+                area.blit(prop_img_list[i], (-20, -20), prop_size_list[i])
+                surface.blit(area, (480, 670), area.get_rect())
+
+
+
+
+
 
         for player in player_group:
             if markup.get_item_at(player.row, player.col) == 'p':
