@@ -17,7 +17,7 @@ ENDING = 2
 def main():
 
     state = START
-    gameRunning = True
+    winner = None
 
     grid_row = 20
     grid_col = 25
@@ -26,7 +26,7 @@ def main():
     player_zero_auto_walk = False
 
     pygame.init()
-    WindowSize_x = 802
+    WindowSize_x = 800
     WindowSize_y = 730
     surface = pygame.display.set_mode([WindowSize_x, WindowSize_y])
     pygame.display.set_caption('CATCH THE FLAG')
@@ -44,7 +44,7 @@ def main():
     player_one_sprite = pygame.transform.scale(player_one_sprite, (int(
         player_one_sprite.get_size()[0]/4), int(player_one_sprite.get_size()[1]/4)))
     background_zero = pygame.transform.scale(background_zero, (int(
-        background_zero.get_size()[0]*2), int(background_zero.get_size()[1]*2.3)))
+        background_zero.get_size()[0]*2), int(background_zero.get_size()[1]*2.315)))
     background_final = pygame.transform.scale(background_final, (int(
         background_final.get_size()[0] * 2.2), int(background_final.get_size()[1] * 3)))
     surface.blit(background, (0, 0))
@@ -64,18 +64,21 @@ def main():
     clock = pygame.time.Clock()
     '''loop things'''
 
-    while gameRunning:
+    generate_g = Maze.Grid(grid_row, grid_col)
+    Maze.wilson(generate_g)
+    generate_markup = Maze.FlagAndPlayersMarkup(generate_g)
+
+    while True:
         if state == START:
-            surface.blit(background_zero, (0, 0))
+            surface.blit(background_zero, (2, 0))
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == K_ESCAPE:
                         sys.exit()
                     if event.key == K_b:
                         surface.blit(background, (0, 0))
-                        g = Maze.Grid(grid_row, grid_col)
-                        Maze.wilson(g)
-                        markup = Maze.FlagAndPlayersMarkup(g)
+                        g = generate_g
+                        markup = generate_markup
 
                         list1 = []
                         font = pygame.font.SysFont('Courier New', 38)
@@ -160,10 +163,10 @@ def main():
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
+                    sys.exit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        running = False
+                        sys.exit()
                     if event.key == K_q:  # Quit
                         if player_one.prop != 0:
                             pass
@@ -311,11 +314,14 @@ def main():
                 Character.exitFlag0 = True
                 player_one_auto_walk = False
                 Character.exitFlag1 = True
-
                 player_zero_auto_walk = False
                 Character.exitFlag0 = True
                 player_one_auto_walk = False
                 Character.exitFlag1 = True
+                if markup.get_item_at(player_one.row, player_one.col) == 'f':
+                    winner = 1
+                else:
+                    winner = 0
                 state = ENDING
 
             land_group.draw(surface)
@@ -328,10 +334,16 @@ def main():
             clock.tick(30)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    gameRunning = False
+                    sys.exit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        gameRunning = False
+                        sys.exit()
+                    if (event.key == pygame.K_q and winner == 0) or (event.key == pygame.K_m and winner == 1):
+                        player_group = pygame.sprite.Group()
+                        player_zero = Character.Player('player_zero', player_zero_sprite)
+                        player_one = Character.Player('player_one', player_one_sprite)
+                        player_group.add(player_zero, player_one)
+                        state = START
             surface.blit(background_final, (0, 0))
             pygame.display.flip()
         '''Game Over'''
