@@ -6,7 +6,7 @@ class Prop(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.loc_x = 16.5
         self.loc_y = 16.5
-        self.image = pygame.Surface((30, 30))
+        self.image = pygame.Surface((70, 70))
         self.image.set_colorkey((255, 255, 255))
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
         self.col = (int)(self.loc_x + 15.5) // 32 - 1

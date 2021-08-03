@@ -6,7 +6,7 @@ class Land(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.loc_x = 16.5
         self.loc_y = 16.5
-        self.image = pygame.Surface((28.5, 28.5))
+        self.image = pygame.Surface((28, 28))
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 
         self.col = (int)(self.loc_x + 15.5) // 32 - 1

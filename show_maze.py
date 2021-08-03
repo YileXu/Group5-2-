@@ -82,19 +82,19 @@ def display_grid(g, markup, screen, player_zero, player_one, gad_list, icelist, 
             if not c.north or not c.is_linked(c.north):
                 pygame.gfxdraw.hline(screen,
                                      cell_x, cell_x + 31, cell_y,
-                                     (255, 192, 203))
+                                     (0, 0, 0))
             if not c.south or not c.is_linked(c.south):
                 pygame.gfxdraw.hline(screen,
                                      cell_x, cell_x + 31, cell_y + 31,
-                                     (255, 192, 203))
+                                     (0, 0, 0))
             if not c.east or not c.is_linked(c.east):
                 pygame.gfxdraw.vline(screen,
                                      cell_x + 31, cell_y, cell_y + 31,
-                                     (255, 192, 203))
+                                     (0, 0, 0))
             if not c.west or not c.is_linked(c.west):
                 pygame.gfxdraw.vline(screen,
                                      cell_x, cell_y, cell_y + 31,
-                                     (255, 192, 203))
+                                     (0, 0, 0))
 
 
 

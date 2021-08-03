@@ -20,8 +20,6 @@ def main():
 
     pygame.init()
 
-    WindowSize_x = 800
-    WindowSize_y = 730
 
     WindowSize_x = 802
     WindowSize_y = 802
@@ -117,6 +115,7 @@ def main():
     markup = Maze.FlagAndPlayersMarkup(g)
 
     list1 = []
+    font = pygame.font.SysFont('Courier New', 38)
     for randombox in gadgets_group:
         list1.append(randombox)
     print("len of list", len(list1))
@@ -151,8 +150,18 @@ def main():
         water.rectChange()
     for randombox in gadgets_group:
         randombox.rectChange()
+    lemon = (50, 205, 50)
+    clay = (138, 54, 15)
     '''distributed positions'''
+    Playerone_font = font.render('Player One', True, lemon, None)
+    surface.blit(Playerone_font, (40, 674), Playerone_font.get_rect())
+    Playertwo_font = font.render('Player Two', True, clay, None)
+    surface.blit(Playertwo_font, (540, 674), Playertwo_font.get_rect())
 
+
+
+
+    '''Game Loop'''
     while running:
         clock.tick(60)
         left = False
@@ -240,6 +249,7 @@ def main():
             pygame.sprite.groupcollide(
                 player_group, gadgets_group, False, True, collided=pygame.sprite.collide_circle)
 
+
         if not player_zero_auto_walk:
             player_zero.update(g, top, down, right, left, prop_use, markup)
         else:
@@ -252,7 +262,7 @@ def main():
 
         for player in player_group:
             if markup.get_item_at(player.row, player.col) == 'p':
-                player.getGadget()
+                player.getGadget()   #抽个数
                 markup.set_item_at(player.row, player.col, ' ')
             elif markup.get_item_at(player.row, player.col) == 'b':  # bomb detection
                 print("meet bomb")
@@ -304,7 +314,7 @@ def main():
         gadgets_group.draw(surface)
         player_group.draw(surface)
         pygame.display.flip()
-        '''game loop'''
+
     player_zero_auto_walk = False
     Character.exitFlag0 = True
     player_one_auto_walk = False
