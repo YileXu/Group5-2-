@@ -1,5 +1,5 @@
 import pygame
-
+import pygame.gfxdraw
 def display_grid(g, markup, screen, player_zero, player_one, gad_list, icelist, waterlist):
     for row in range(g.num_rows):
         for col in range(g.num_columns):
@@ -55,9 +55,6 @@ def display_grid(g, markup, screen, player_zero, player_one, gad_list, icelist, 
                                        7,  # radius
                                        0)  # filled
                     player_one.directMoveViaLoc(cell_x+16.5, cell_y+16.5)
-
-
-
                 if value == 'p':  # Gadgets
                     pygame.draw.circle(screen,
                                        (255, 255, 255),
@@ -95,6 +92,138 @@ def display_grid(g, markup, screen, player_zero, player_one, gad_list, icelist, 
                 pygame.gfxdraw.vline(screen,
                                      cell_x, cell_y, cell_y + 31,
                                      (0, 0, 0))
+
+
+def put_bomb(g, markup, screen):
+    for row in range(g.num_rows):
+        for col in range(g.num_columns):
+            if markup:
+                value = markup.get_item_at(row, col)
+                if value == 'b':
+                    pygame.draw.circle(screen, (112, 128, 105),(col*32+16, row*32+16),7, 0)
+
+
+def bomb_effect(surface, player):
+    cell_x = player.col * 32 + 1
+    cell_y = player.row * 32 + 1
+    pygame.gfxdraw.hline(surface,
+                         cell_x, cell_x + 31, cell_y - 31,
+                         (255, 97, 0))
+    pygame.gfxdraw.hline(surface,
+                         cell_x, cell_x + 31, cell_y + 62,
+                         (255, 97, 0))
+    pygame.gfxdraw.hline(surface,
+                         cell_x - 31, cell_x, cell_y - 31,
+                         (255, 97, 0))
+    pygame.gfxdraw.hline(surface,
+                         cell_x - 31, cell_x, cell_y + 62,
+                         (255, 97, 0))
+    pygame.gfxdraw.hline(surface,
+                         cell_x + 31, cell_x + 62, cell_y + 62,
+                         (255, 97, 0))
+    pygame.gfxdraw.hline(surface,
+                         cell_x + 31, cell_x + 62, cell_y - 31,
+                         (255, 97, 0))
+
+    pygame.gfxdraw.vline(surface,
+                         cell_x - 31, cell_y + 31, cell_y +62,
+                         (255, 97, 0))
+    pygame.gfxdraw.vline(surface,
+                         cell_x - 31, cell_y, cell_y + 31,
+                         (255, 97, 0))
+    pygame.gfxdraw.vline(surface,
+                         cell_x - 31, cell_y - 31, cell_y,
+                         (255, 97, 0))
+    pygame.gfxdraw.vline(surface,
+                         cell_x + 62, cell_y, cell_y + 31,
+                         (255, 97, 0))
+    pygame.gfxdraw.vline(surface,
+                         cell_x, cell_y - 31, cell_y,
+                         (255, 97, 0))
+    pygame.gfxdraw.vline(surface,
+                         cell_x, cell_y + 31, cell_y + 62,
+                         (255, 97, 0))
+
+def set_tp(surface, player):
+    cell_x = player.col * 32 + 1
+    cell_y = player.row * 32 + 1
+    pygame.gfxdraw.hline(surface,
+                         cell_x - 62, cell_x - 31, cell_y - 62,
+                         (135, 206, 235))
+    pygame.gfxdraw.hline(surface,
+                         cell_x - 31, cell_x, cell_y - 62,
+                         (135, 206, 235))
+    pygame.gfxdraw.hline(surface,
+                         cell_x, cell_x + 31, cell_y - 62,
+                         (135, 206, 235))
+    pygame.gfxdraw.hline(surface,
+                         cell_x + 31, cell_x +62, cell_y - 62,
+                         (135, 206, 235))
+    pygame.gfxdraw.hline(surface,
+                         cell_x + 62, cell_x + 93, cell_y - 62,
+                         (135, 206, 235))
+
+    pygame.gfxdraw.hline(surface,
+                         cell_x - 62, cell_x - 31, cell_y + 93,
+                         (135, 206, 235))
+    pygame.gfxdraw.hline(surface,
+                         cell_x - 31, cell_x, cell_y + 93,
+                         (135, 206, 235))
+    pygame.gfxdraw.hline(surface,
+                         cell_x, cell_x + 31, cell_y + 93,
+                         (135, 206, 235))
+    pygame.gfxdraw.hline(surface,
+                         cell_x + 31, cell_x + 62, cell_y + 93,
+                         (135, 206, 235))
+    pygame.gfxdraw.hline(surface,
+                         cell_x + 62, cell_x + 93, cell_y + 93,
+                         (135, 206, 235))
+
+
+    pygame.gfxdraw.vline(surface,
+                         cell_x - 62, cell_y - 62, cell_y - 31,
+                         (135, 206, 235))
+    pygame.gfxdraw.vline(surface,
+                         cell_x - 62, cell_y - 31, cell_y,
+                         (135, 206, 235))
+    pygame.gfxdraw.vline(surface,
+                         cell_x - 62, cell_y, cell_y + 31,
+                         (135, 206, 235))
+    pygame.gfxdraw.vline(surface,
+                         cell_x - 62, cell_y + 31, cell_y + 62,
+                         (135, 206, 235))
+    pygame.gfxdraw.vline(surface,
+                         cell_x - 62, cell_y + 62, cell_y + 93,
+                         (135, 206, 235))
+
+    pygame.gfxdraw.vline(surface,
+                         cell_x + 93, cell_y - 62, cell_y - 31,
+                         (135, 206, 235))
+    pygame.gfxdraw.vline(surface,
+                         cell_x + 93, cell_y - 31, cell_y,
+                         (135, 206, 235))
+    pygame.gfxdraw.vline(surface,
+                         cell_x + 93, cell_y, cell_y + 31,
+                         (135, 206, 235))
+    pygame.gfxdraw.vline(surface,
+                         cell_x + 93, cell_y + 31, cell_y + 62,
+                         (135, 206, 235))
+    pygame.gfxdraw.vline(surface,
+                         cell_x + 93, cell_y + 62, cell_y + 93,
+                         (135, 206, 235))
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

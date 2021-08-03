@@ -14,7 +14,7 @@ class Player(pygame.sprite.Sprite):
         self.loc_y = loc_y
         self.hv = 32
         self.vv = 32
-        self.image = pygame.Surface((30, 30))
+        self.image = pygame.Surface((28, 28))
         self.image.set_colorkey((0, 0, 0))
         self.image.blit(cha_surf, (0, 0), (0, 0, 50, 70))
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
@@ -50,7 +50,8 @@ class Player(pygame.sprite.Sprite):
         #  g 已经经过算法生成
         if top:
             if g.cell_at(self.row, self.col).north != None:
-                if not self.teleporting and not self.trap and (self.cross_privilege or g.cell_at(self.row, self.col).is_linked(g.cell_at((int)(self.loc_y - self.vv + 15.5) // 32 - 1, self.col))):
+                if not self.teleporting and not self.trap and \
+                        (self.cross_privilege or g.cell_at(self.row, self.col).is_linked(g.cell_at((int)(self.loc_y - self.vv + 15.5) // 32 - 1, self.col))):
                     self.auto_walk_dir = 'top'
                     self.prev_row = self.row
                     self.prev_col = self.col
@@ -171,9 +172,9 @@ class Player(pygame.sprite.Sprite):
                 self.teleport_col = self.col
                 self.teleport_row = self.row
                 print("teleporting")
+
             else:
-                self.directMoveViaColRow(
-                    self.teleport_col, self.teleport_row)
+                self.directMoveViaColRow(self.teleport_col, self.teleport_row)
                 self.teleporting = False
                 print("teleport done")
                 self.prop = 0
@@ -185,8 +186,7 @@ class Player(pygame.sprite.Sprite):
                 self.teleport_row = self.row
                 print("teleporting bomb")
             else:
-                markup.set_item_at(self.teleport_row,
-                                   self.teleport_col, 'b')
+                markup.set_item_at(self.teleport_row,self.teleport_col, 'b')
                 self.teleporting = False
                 print("teleport bomb done")
                 self.prop = 0

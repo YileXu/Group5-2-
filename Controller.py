@@ -22,17 +22,19 @@ def main():
 
 
     WindowSize_x = 802
-    WindowSize_y = 750
+    WindowSize_y = 730
 
     surface = pygame.display.set_mode([WindowSize_x, WindowSize_y])
     pygame.display.set_caption('CATCH THE FLAG')
-    background = pygame.image.load('背景图片/瓷砖.jpg').convert()
+    background = pygame.image.load('背景图片/瓷砖.png').convert()
     background_zero = pygame.image.load('背景图片/menu.png').convert()
     background_final = pygame.image.load('gameover.png').convert()
     player_zero_sprite = pygame.image.load(
         'sprites/players/Pepper-Pete.png').convert()
     player_one_sprite = pygame.image.load(
         'sprites/players/Luigi.png').convert()
+    background = pygame.transform.scale(background, (int(
+        background.get_size()[0] * 2), int(background.get_size()[1] * 2.7)))
     player_zero_sprite = pygame.transform.scale(player_zero_sprite, (int(
         player_zero_sprite.get_size()[0]/4), int(player_zero_sprite.get_size()[1]/4)))
     player_one_sprite = pygame.transform.scale(player_one_sprite, (int(
@@ -158,6 +160,9 @@ def main():
     Playertwo_font = font.render('Player Two', True, clay, None)
     surface.blit(Playertwo_font, (540, 674), Playertwo_font.get_rect())
 
+    non_prop = pygame.image.load('sprites/道具/水.jpg').convert()
+    non_prop = pygame.transform.scale(non_prop, (non_prop.get_rect().width//4, non_prop.get_rect().height//4))
+
     conv_surf = pygame.image.load('sprites/道具/反转.png').convert()
     conv_surf = pygame.transform.scale(conv_surf, (conv_surf.get_rect().width//6, conv_surf.get_rect().height//6))
     mine_surf = pygame.image.load('sprites/道具/地雷.png').convert()
@@ -265,7 +270,7 @@ def main():
 
         if not player_zero_auto_walk:
             player_zero.update(g, top, down, right, left, prop_use, markup)
-        else: 
+        else:
             player_zero.auto_walk_dir_update(top, down, right, left)
         if not player_one_auto_walk:
             player_one.update(g, top1, down1, right1, left1, prop_use1, markup)
@@ -278,11 +283,17 @@ def main():
             if player_one.prop == i+1:
                 area = pygame.Surface((50, 50))
                 area.blit(prop_img_list[i], (-20, -20), prop_size_list[i])
+                area.set_colorkey((0,0,0))
                 surface.blit(area, (290, 670), area.get_rect())
+            if player_one.prop == 0:
+                pygame.draw.rect(surface, (0, 0, 0), (290, 670, 50, 50))
             if player_zero.prop == i+1:
-                area = pygame.Surface((50, 50))
-                area.blit(prop_img_list[i], (-20, -20), prop_size_list[i])
-                surface.blit(area, (480, 670), area.get_rect())
+                area0 = pygame.Surface((50, 50))
+                area0.blit(prop_img_list[i], (-20, -20), prop_size_list[i])
+                area0.set_colorkey((0,0,0))
+                surface.blit(area0, (480, 670), area0.get_rect())
+            if player_zero.prop == 0:
+                pygame.draw.rect(surface, (0, 0, 0), (480, 670, 50, 50))
 
 
 
@@ -305,11 +316,14 @@ def main():
                         continue
                     elif (col_offset == -1 and cur_cell.west == None) or (col_offset == 1 and cur_cell.east == None):
                         continue
+                    show_maze.bomb_effect(surface, player)
+
                     markup.set_item_at(player.row, player.col, ' ')
                     player.directMoveViaColRow(
                         player.col+col_offset, player.row+row_offset)
                     print("boom, I am at", player.row, player.col)
                     break
+        show_maze.put_bomb(g, markup, surface)
 
         if player_zero_auto_walk and markup.get_item_in(player_zero.row, player_zero.col) != 2:
             player_zero_auto_walk = False
