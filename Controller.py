@@ -30,14 +30,14 @@ def main():
     WindowSize_y = 730
     surface = pygame.display.set_mode([WindowSize_x, WindowSize_y])
     pygame.display.set_caption('CATCH THE FLAG')
-    background = pygame.image.load('背景图片/瓷砖.png').convert()
-    background_zero = pygame.image.load('背景图片/menu_new.png').convert()
+    background = pygame.image.load('背景/瓷砖.png').convert()
+    background_zero = pygame.image.load('背景/menu_new.png').convert()
     background_final = pygame.image.load('gameover.png').convert()
     player_zero_sprite = pygame.image.load(
         'sprites/players/Pepper-Pete.png').convert()
     player_one_sprite = pygame.image.load(
         'sprites/players/Luigi.png').convert()
-    instruction_page = pygame.image.load('背景图片/instruction.png').convert()
+    instruction_page = pygame.image.load('背景/instruction.png').convert()
     background = pygame.transform.scale(background, (int(
         background.get_size()[0] * 2), int(background.get_size()[1] * 2.7)))
     player_zero_sprite = pygame.transform.scale(player_zero_sprite, (int(
