@@ -31,12 +31,13 @@ def main():
     surface = pygame.display.set_mode([WindowSize_x, WindowSize_y])
     pygame.display.set_caption('CATCH THE FLAG')
     background = pygame.image.load('背景图片/瓷砖.png').convert()
-    background_zero = pygame.image.load('背景图片/menu.png').convert()
+    background_zero = pygame.image.load('背景图片/menu_new.png').convert()
     background_final = pygame.image.load('gameover.png').convert()
     player_zero_sprite = pygame.image.load(
         'sprites/players/Pepper-Pete.png').convert()
     player_one_sprite = pygame.image.load(
         'sprites/players/Luigi.png').convert()
+    instruction_page = pygame.image.load('背景图片/instruction.png').convert()
     background = pygame.transform.scale(background, (int(
         background.get_size()[0] * 2), int(background.get_size()[1] * 2.7)))
     player_zero_sprite = pygame.transform.scale(player_zero_sprite, (int(
@@ -45,6 +46,8 @@ def main():
         player_one_sprite.get_size()[0]/4), int(player_one_sprite.get_size()[1]/4)))
     background_zero = pygame.transform.scale(background_zero, (int(
         background_zero.get_size()[0]*2), int(background_zero.get_size()[1]*2.315)))
+    instruction_page = pygame.transform.scale(instruction_page, (int(
+        instruction_page.get_size()[0] * 2), int(instruction_page.get_size()[1] * 2.315)))
     background_final = pygame.transform.scale(background_final, (int(
         background_final.get_size()[0] * 2.2), int(background_final.get_size()[1] * 3)))
     surface.blit(background, (0, 0))
@@ -67,14 +70,18 @@ def main():
     generate_g = Maze.Grid(grid_row, grid_col)
     Maze.wilson(generate_g)
     generate_markup = Maze.FlagAndPlayersMarkup(generate_g)
-
+    page_state = 0
     while True:
         if state == START:
             surface.blit(background_zero, (2, 0))
+            if page_state != 0:
+                surface.blit(instruction_page, (0, 0))
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
                     if event.key == K_ESCAPE:
                         sys.exit()
+                    if event.key == K_i:
+                        page_state += 1
                     if event.key == K_b:
                         surface.blit(background, (0, 0))
                         g = generate_g
@@ -128,18 +135,18 @@ def main():
                         non_prop = pygame.transform.scale(non_prop, (non_prop.get_rect().width//4, non_prop.get_rect().height//4))
 
                         conv_surf = pygame.image.load('sprites/道具/反转.png').convert()
-                        conv_surf = pygame.transform.scale(conv_surf, (conv_surf.get_rect().width//6, conv_surf.get_rect().height//6))
+                        conv_surf = pygame.transform.scale(conv_surf, (conv_surf.get_rect().width//155, conv_surf.get_rect().height//130))
                         mine_surf = pygame.image.load('sprites/道具/地雷.png').convert()
-                        mine_surf = pygame.transform.scale(mine_surf, (mine_surf.get_rect().width//6, mine_surf.get_rect().height//6))
+                        mine_surf = pygame.transform.scale(mine_surf, (mine_surf.get_rect().width//75, mine_surf.get_rect().height//75))
 
                         pass_surf = pygame.image.load('sprites/道具/墙.png').convert()
-                        pass_surf = pygame.transform.scale(pass_surf, (pass_surf.get_rect().width//6, pass_surf.get_rect().height//6))
+                        pass_surf = pygame.transform.scale(pass_surf, (pass_surf.get_rect().width//30, pass_surf.get_rect().height//30))
 
                         tran_surf = pygame.image.load('sprites/道具/传送.png').convert()
-                        tran_surf = pygame.transform.scale(tran_surf, (tran_surf.get_rect().width//6, tran_surf.get_rect().height//6))
+                        tran_surf = pygame.transform.scale(tran_surf, (tran_surf.get_rect().width//11, tran_surf.get_rect().height//11))
 
                         bomb_surf = pygame.image.load('sprites/道具/炸弹.png').convert()
-                        bomb_surf = pygame.transform.scale(bomb_surf, (bomb_surf.get_rect().width//6, bomb_surf.get_rect().height//6))
+                        bomb_surf = pygame.transform.scale(bomb_surf, (bomb_surf.get_rect().width//10, bomb_surf.get_rect().height//10))
 
                         prop_img_list = [conv_surf, mine_surf, pass_surf, tran_surf, bomb_surf]
                         prop_size_list = [(0, 0, 8000, 6467), (0, 0, 4167, 4167), (0, 0, 1600, 1600), (0, 0, 617, 655), (0, 0, 500, 500)]
@@ -250,14 +257,14 @@ def main():
             for i in range(5):
                 if player_one.prop == i+1:
                     area = pygame.Surface((50, 50))
-                    area.blit(prop_img_list[i], (-20, -20), prop_size_list[i])
+                    area.blit(prop_img_list[i], (-5, -5), prop_size_list[i])
                     area.set_colorkey((0,0,0))
                     surface.blit(area, (290, 670), area.get_rect())
                 if player_one.prop == 0:
                     pygame.draw.rect(surface, (0, 0, 0), (290, 670, 50, 50))
                 if player_zero.prop == i+1:
                     area0 = pygame.Surface((50, 50))
-                    area0.blit(prop_img_list[i], (-20, -20), prop_size_list[i])
+                    area0.blit(prop_img_list[i], (-5, -5), prop_size_list[i])
                     area0.set_colorkey((0,0,0))
                     surface.blit(area0, (480, 670), area0.get_rect())
                 if player_zero.prop == 0:
@@ -287,6 +294,13 @@ def main():
                         print("boom, I am at", player.row, player.col)
                         break
             show_maze.put_bomb(g, markup, surface)
+            if player_one.teleporting or player_zero.teleporting:
+                for player in player_group:
+                    if player.teleporting:
+                        show_maze.set_tp(surface, player)
+                        player.show_teleport(surface)
+                    else:
+                        continue
 
             if player_zero_auto_walk and markup.get_item_in(player_zero.row, player_zero.col) != 2:
                 player_zero_auto_walk = False

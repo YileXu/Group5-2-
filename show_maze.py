@@ -149,68 +149,68 @@ def set_tp(surface, player):
     cell_y = player.row * 32 + 1
     pygame.gfxdraw.hline(surface,
                          cell_x - 62, cell_x - 31, cell_y - 62,
-                         (135, 206, 235))
+                         (3, 168, 158))
     pygame.gfxdraw.hline(surface,
                          cell_x - 31, cell_x, cell_y - 62,
-                         (135, 206, 235))
+                         (3, 168, 158))
     pygame.gfxdraw.hline(surface,
                          cell_x, cell_x + 31, cell_y - 62,
-                         (135, 206, 235))
+                         (3, 168, 158))
     pygame.gfxdraw.hline(surface,
                          cell_x + 31, cell_x +62, cell_y - 62,
-                         (135, 206, 235))
+                         (3, 168, 158))
     pygame.gfxdraw.hline(surface,
                          cell_x + 62, cell_x + 93, cell_y - 62,
-                         (135, 206, 235))
+                         (3, 168, 158))
 
     pygame.gfxdraw.hline(surface,
                          cell_x - 62, cell_x - 31, cell_y + 93,
-                         (135, 206, 235))
+                         (3, 168, 158))
     pygame.gfxdraw.hline(surface,
                          cell_x - 31, cell_x, cell_y + 93,
-                         (135, 206, 235))
+                         (3, 168, 158))
     pygame.gfxdraw.hline(surface,
                          cell_x, cell_x + 31, cell_y + 93,
-                         (135, 206, 235))
+                         (3, 168, 158))
     pygame.gfxdraw.hline(surface,
                          cell_x + 31, cell_x + 62, cell_y + 93,
-                         (135, 206, 235))
+                         (3, 168, 158))
     pygame.gfxdraw.hline(surface,
                          cell_x + 62, cell_x + 93, cell_y + 93,
-                         (135, 206, 235))
+                         (3, 168, 158))
 
 
     pygame.gfxdraw.vline(surface,
                          cell_x - 62, cell_y - 62, cell_y - 31,
-                         (135, 206, 235))
+                         (3, 168, 158))
     pygame.gfxdraw.vline(surface,
                          cell_x - 62, cell_y - 31, cell_y,
-                         (135, 206, 235))
+                         (3, 168, 158))
     pygame.gfxdraw.vline(surface,
                          cell_x - 62, cell_y, cell_y + 31,
-                         (135, 206, 235))
+                         (3, 168, 158))
     pygame.gfxdraw.vline(surface,
                          cell_x - 62, cell_y + 31, cell_y + 62,
-                         (135, 206, 235))
+                         (3, 168, 158))
     pygame.gfxdraw.vline(surface,
                          cell_x - 62, cell_y + 62, cell_y + 93,
-                         (135, 206, 235))
+                         (3, 168, 158))
 
     pygame.gfxdraw.vline(surface,
                          cell_x + 93, cell_y - 62, cell_y - 31,
-                         (135, 206, 235))
+                         (3, 168, 158))
     pygame.gfxdraw.vline(surface,
                          cell_x + 93, cell_y - 31, cell_y,
-                         (135, 206, 235))
+                         (3, 168, 158))
     pygame.gfxdraw.vline(surface,
                          cell_x + 93, cell_y, cell_y + 31,
-                         (135, 206, 235))
+                         (3, 168, 158))
     pygame.gfxdraw.vline(surface,
                          cell_x + 93, cell_y + 31, cell_y + 62,
-                         (135, 206, 235))
+                         (3, 168, 158))
     pygame.gfxdraw.vline(surface,
                          cell_x + 93, cell_y + 62, cell_y + 93,
-                         (135, 206, 235))
+                         (3, 168, 158))
 
 
 

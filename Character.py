@@ -191,6 +191,13 @@ class Player(pygame.sprite.Sprite):
                 print("teleport bomb done")
                 self.prop = 0
 
+    def show_teleport(self, surface):
+        pygame.draw.circle(surface,
+                           (67, 155, 201),
+                           (self.teleport_col * 32 + 16, self.teleport_row * 32 + 16),
+                           7,  # radius
+                           0)  # filled
+
 
 exitFlag0 = False
 exitFlag1 = False
