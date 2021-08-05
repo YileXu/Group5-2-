@@ -13,6 +13,10 @@ START = 0
 GAMELOOP = 1
 ENDING = 2
 
+pygame.mixer.init()
+pygame.mixer.music.load('C:/Users/19442/Desktop/maze/Group5-2-/音效/背景音乐/Kevin MacLeod - Monkeys Spinning Monkeys.wav')
+pygame.mixer.music.play(-1,0)
+
 
 def main():
 
@@ -374,6 +378,8 @@ def main():
             surface.blit(background_final, (0, 0))
             pygame.display.flip()
         '''Game Over'''
+
+  
 
 if __name__ == "__main__":
     main()
