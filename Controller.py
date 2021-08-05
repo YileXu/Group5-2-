@@ -14,7 +14,7 @@ GAMELOOP = 1
 ENDING = 2
 
 pygame.mixer.init()
-pygame.mixer.music.load('C:/Users/19442/Desktop/maze/Group5-2-/音效/背景音乐/Kevin MacLeod - Monkeys Spinning Monkeys.wav')
+pygame.mixer.music.load('音效/背景音乐/Kevin MacLeod - Monkeys Spinning Monkeys.wav')
 pygame.mixer.music.play(-1,0)
 
 
@@ -36,7 +36,8 @@ def main():
     pygame.display.set_caption('Flag Warrior')
     background = pygame.image.load('背景/瓷砖.png').convert()
     background_zero = pygame.image.load('背景/menu_new.png').convert()
-    background_final = pygame.image.load('gameover.png').convert()
+    background_final0 = pygame.image.load('背景/gameover1.png').convert()
+    background_final1 = pygame.image.load('背景/gameover2.png').convert()
     player_zero_sprite = pygame.image.load('sprites/players/Pepper-Pete.png').convert()
     player_one_sprite = pygame.image.load('sprites/players/Luigi.png').convert()
     indicator_sprite = pygame.image.load('sprites/道具/indicate.png').convert()
@@ -53,8 +54,11 @@ def main():
         background_zero.get_size()[0]*2), int(background_zero.get_size()[1]*2.315)))
     instruction_page = pygame.transform.scale(instruction_page, (int(
         instruction_page.get_size()[0] * 2), int(instruction_page.get_size()[1] * 2.315)))
-    background_final = pygame.transform.scale(background_final, (int(
-        background_final.get_size()[0] * 2.2), int(background_final.get_size()[1] * 3)))
+    background_final0 = pygame.transform.scale(background_final0, (int(
+        background_final0.get_size()[0] * 2.2), int(background_final0.get_size()[1] * 2.5)))
+    background_final1 = pygame.transform.scale(background_final1, (int(
+        background_final1.get_size()[0] * 2.2), int(background_final1.get_size()[1] * 2.5)))
+
     surface.blit(background, (0, 0))
     '''drawing the background and players initially'''
 
@@ -69,8 +73,8 @@ def main():
         gadgets_group.add(Randombox.Randombox())
     '''initialize the gadgets'''
     indicator_group = pygame.sprite.Group()
-    indicator_zero = Character.Indicator(indicator_sprite, player_zero)
-    indicator_one = Character.Indicator(indicator_sprite, player_one)
+    indicator_zero = Character.Indicator(indicator_sprite)
+    indicator_one = Character.Indicator(indicator_sprite)
     indicator_group.add(indicator_one, indicator_zero)
     clock = pygame.time.Clock()
     '''loop things'''
@@ -251,7 +255,6 @@ def main():
                     player_group, gadgets_group, False, True, collided=pygame.sprite.collide_circle)
             pygame.sprite.groupcollide(player_group, indicator_group, False, True, collided=pygame.sprite.collide_circle)
 
-
             if not player_zero_auto_walk:
                 player_zero.update(g, top, down, right, left, prop_use, markup)
             else:
@@ -310,13 +313,18 @@ def main():
                 if player.teleporting:
                     show_maze.set_tp(surface, player)
                     if player == player_zero:
-                        player_zero.show_teleport(surface)
+                        player_zero.show_teleport(indicator_zero)
+                        indicator_zero.show_rect()
+                        # print(player_zero.loc_x, player_zero.loc_y)
+                        print(indicator_zero.loc_x, indicator_zero.loc_y)
+
                     elif player == player_one:
-                        player_one.show_teleport(surface)
+                        player_one.show_teleport(indicator_one)
+                        indicator_one.show_rect()
+                        print(player_one.teleport_col, player_one.teleport_row)
+
                 else:
                     continue
-
-
             if player_zero_auto_walk and markup.get_item_in(player_zero.row, player_zero.col) != 2:
                 player_zero_auto_walk = False
                 Character.exitFlag0 = True
@@ -358,6 +366,8 @@ def main():
             gadgets_group.draw(surface)
             player_group.draw(surface)
             indicator_group.draw(surface)
+            for indicator in indicator_group:
+                print(indicator.rect, indicator.loc_x, indicator.loc_y)
             pygame.display.flip()
         '''Game Loop'''
 
@@ -375,7 +385,10 @@ def main():
                         player_one = Character.Player('player_one', player_one_sprite)
                         player_group.add(player_zero, player_one)
                         state = START
-            surface.blit(background_final, (0, 0))
+            if winner == 0:
+                surface.blit(background_final1, (0, 0))
+            else:
+                surface.blit(background_final0, (0, 0))
             pygame.display.flip()
         '''Game Over'''
 

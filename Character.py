@@ -21,7 +21,7 @@ class Player(pygame.sprite.Sprite):
         self.col = (int)(self.loc_x + 15.5) // 32 - 1
         self.row = (int)(self.loc_y + 15.5) // 32 - 1
 
-        self.prop = 0
+        self.prop = 4
         self.prev_col = self.col
         self.prev_row = self.row
         self.cross_privilege = False
@@ -197,29 +197,27 @@ class Player(pygame.sprite.Sprite):
                 print("teleport bomb done")
                 self.prop = 0
 
-    def show_teleport(self, surface):
-        pygame.draw.circle(surface,
-                           (67, 155, 201),
-                           (self.teleport_col * 32 + 16, self.teleport_row * 32 + 16),
-                           7,  # radius
-                           0)  # filled
+    def show_teleport(self, indicator):
+        indicator.col = self.teleport_col
+        indicator.row = self.teleport_row
+        indicator.loc_x = self.loc_x
+        indicator.loc_y = self.loc_y
+
 class Indicator(pygame.sprite.Sprite):
-    def __init__(self, cha_surf, player):
+    def __init__(self, cha_surf):
         pygame.sprite.Sprite.__init__(self)
-        self.loc_x = player.loc_x
-        self.loc_y = player.loc_y
-        self.hv = 32
-        self.vv = 32
-        self.image = pygame.Surface((18, 18))
+        self.col = 5
+        self.row = 5
+        self.image = pygame.Surface((20, 20))
         self.image.set_colorkey((0, 0, 0))
         self.image.blit(cha_surf, (0, 0), (0, 0, 50, 70))
-        self.rect = self.image.get_rect(center=(player.teleport_col, player.teleport_row))
-        self.col = (int)(player.teleport_col + 15.5) // 32 - 1
-        self.row = (int)(player.teleport_row + 15.5) // 32 - 1
+        self.loc_x = (self.col + 1) * 32 - 15.5
+        self.loc_y = (self.row + 1) * 32 - 15.5
+        self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 
-    def show_teleport(self, player):
-        self.rect = self.image.get_rect(center=(player.teleport_col, player.teleport_row))
-
+    def show_rect(self):
+        self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
+        print(self.col, self.row, self.loc_x, self.loc_y)
 
 
 exitFlag0 = False
