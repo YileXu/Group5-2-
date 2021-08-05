@@ -29,14 +29,13 @@ def main():
     WindowSize_x = 800
     WindowSize_y = 730
     surface = pygame.display.set_mode([WindowSize_x, WindowSize_y])
-    pygame.display.set_caption('CATCH THE FLAG')
+    pygame.display.set_caption('Flag Warrior')
     background = pygame.image.load('背景/瓷砖.png').convert()
     background_zero = pygame.image.load('背景/menu_new.png').convert()
     background_final = pygame.image.load('gameover.png').convert()
-    player_zero_sprite = pygame.image.load(
-        'sprites/players/Pepper-Pete.png').convert()
-    player_one_sprite = pygame.image.load(
-        'sprites/players/Luigi.png').convert()
+    player_zero_sprite = pygame.image.load('sprites/players/Pepper-Pete.png').convert()
+    player_one_sprite = pygame.image.load('sprites/players/Luigi.png').convert()
+    indicator_sprite = pygame.image.load('sprites/道具/indicate.png').convert()
     instruction_page = pygame.image.load('背景/instruction.png').convert()
     background = pygame.transform.scale(background, (int(
         background.get_size()[0] * 2), int(background.get_size()[1] * 2.7)))
@@ -44,6 +43,8 @@ def main():
         player_zero_sprite.get_size()[0]/4), int(player_zero_sprite.get_size()[1]/4)))
     player_one_sprite = pygame.transform.scale(player_one_sprite, (int(
         player_one_sprite.get_size()[0]/4), int(player_one_sprite.get_size()[1]/4)))
+    indicator_sprite = pygame.transform.scale(indicator_sprite, (int(
+        indicator_sprite.get_size()[0]/4), int(indicator_sprite.get_size()[1]/4)))
     background_zero = pygame.transform.scale(background_zero, (int(
         background_zero.get_size()[0]*2), int(background_zero.get_size()[1]*2.315)))
     instruction_page = pygame.transform.scale(instruction_page, (int(
@@ -63,7 +64,10 @@ def main():
     for i in range(gadgets_num):
         gadgets_group.add(Randombox.Randombox())
     '''initialize the gadgets'''
-
+    indicator_group = pygame.sprite.Group()
+    indicator_zero = Character.Indicator(indicator_sprite, player_zero)
+    indicator_one = Character.Indicator(indicator_sprite, player_one)
+    indicator_group.add(indicator_one, indicator_zero)
     clock = pygame.time.Clock()
     '''loop things'''
 
@@ -241,6 +245,7 @@ def main():
             if len(gadgets_group) > 0:
                 pygame.sprite.groupcollide(
                     player_group, gadgets_group, False, True, collided=pygame.sprite.collide_circle)
+            pygame.sprite.groupcollide(player_group, indicator_group, False, True, collided=pygame.sprite.collide_circle)
 
 
             if not player_zero_auto_walk:
@@ -274,7 +279,8 @@ def main():
                 if markup.get_item_at(player.row, player.col) == 'p':
                     player.getGadget()   #抽个数
                     markup.set_item_at(player.row, player.col, ' ')
-                elif markup.get_item_at(player.row, player.col) == 'b':  # bomb detection
+                elif markup.get_item_at(player.row, player.col) == 'b'\
+                        or markup.get_item_at(player.row, player.col) == 'bf':  # bomb detection
                     print("meet bomb")
                     cur_cell = g.grid[player.row][player.col]
                     while True:
@@ -287,20 +293,25 @@ def main():
                         elif (col_offset == -1 and cur_cell.west == None) or (col_offset == 1 and cur_cell.east == None):
                             continue
                         show_maze.bomb_effect(surface, player)
-
-                        markup.set_item_at(player.row, player.col, ' ')
+                        if markup.get_item_at(player.row, player.col) != 'bf':
+                            markup.set_item_at(player.row, player.col, ' ')
+                        else:
+                            markup.set_item_at(player.row, player.col, 'f')
                         player.directMoveViaColRow(
                             player.col+col_offset, player.row+row_offset)
                         print("boom, I am at", player.row, player.col)
                         break
             show_maze.put_bomb(g, markup, surface)
-            if player_one.teleporting or player_zero.teleporting:
-                for player in player_group:
-                    if player.teleporting:
-                        show_maze.set_tp(surface, player)
-                        player.show_teleport(surface)
-                    else:
-                        continue
+            for player in player_group:
+                if player.teleporting:
+                    show_maze.set_tp(surface, player)
+                    if player == player_zero:
+                        player_zero.show_teleport(surface)
+                    elif player == player_one:
+                        player_one.show_teleport(surface)
+                else:
+                    continue
+
 
             if player_zero_auto_walk and markup.get_item_in(player_zero.row, player_zero.col) != 2:
                 player_zero_auto_walk = False
@@ -323,7 +334,8 @@ def main():
                 thread1.start()
             '''ice walk'''
 
-            if markup.get_item_at(player_one.row, player_one.col) == 'f' or markup.get_item_at(player_zero.row, player_zero.col) == 'f':
+            if markup.get_item_at(player_one.row, player_one.col) == 'f' \
+                    or markup.get_item_at(player_zero.row, player_zero.col) == 'f':
                 player_zero_auto_walk = False
                 Character.exitFlag0 = True
                 player_one_auto_walk = False
@@ -341,6 +353,7 @@ def main():
             land_group.draw(surface)
             gadgets_group.draw(surface)
             player_group.draw(surface)
+            indicator_group.draw(surface)
             pygame.display.flip()
         '''Game Loop'''
 

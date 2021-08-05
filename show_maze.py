@@ -1,6 +1,13 @@
 import pygame
 import pygame.gfxdraw
+pygame.init()
+
 def display_grid(g, markup, screen, player_zero, player_one, gad_list, icelist, waterlist):
+    pygame.init()
+    flag = pygame.image.load('sprites/道具/flag.png').convert()
+    flag = pygame.transform.scale(flag, (int(flag.get_size()[0] / 4), int(flag.get_size()[1] / 4)))
+    image = pygame.Surface((28, 28))
+
     for row in range(g.num_rows):
         for col in range(g.num_columns):
             c = g.cell_at(row, col)
@@ -41,6 +48,11 @@ def display_grid(g, markup, screen, player_zero, player_one, gad_list, icelist, 
                                        (cell_x+15, cell_y+15),
                                        7,  # radius
                                        0)  # filled
+
+                    image.blit(screen, (0, 0), (0, 0, 50, 70))
+                    rect = image.get_rect()
+                    screen.blit(flag, (cell_x, cell_y), rect)
+
                 if value == 'p0':  # Player
                     pygame.draw.circle(screen,
                                        (50, 255, 50),
@@ -211,14 +223,6 @@ def set_tp(surface, player):
     pygame.gfxdraw.vline(surface,
                          cell_x + 93, cell_y + 62, cell_y + 93,
                          (3, 168, 158))
-
-
-
-
-
-
-
-
 
 
 

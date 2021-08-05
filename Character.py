@@ -4,7 +4,7 @@ import threading
 import time
 import ctypes
 
-
+pygame.init()
 class Player(pygame.sprite.Sprite):
     def __init__(self, name, cha_surf, loc_x=16.5, loc_y=16.5):
         pygame.sprite.Sprite.__init__(self)
@@ -157,7 +157,10 @@ class Player(pygame.sprite.Sprite):
             self.prop = 0
         elif self.prop == 2:
             # bomb
-            markup.set_item_at(self.prev_row, self.prev_col, 'b')
+            if markup.get_item_at(self.prev_row, self.prev_col) != 'f':
+                markup.set_item_at(self.prev_row, self.prev_col, 'b')
+            else:
+                markup.set_item_at(self.prev_row, self.prev_col, 'bf')
             print("put bomb at", self.prev_row, self.prev_col)
             print("I am at", self.row, self.col)
             self.prop = 0
@@ -186,7 +189,10 @@ class Player(pygame.sprite.Sprite):
                 self.teleport_row = self.row
                 print("teleporting bomb")
             else:
-                markup.set_item_at(self.teleport_row,self.teleport_col, 'b')
+                if markup.get_item_at(self.teleport_row, self.teleport_col) != 'f':
+                    markup.set_item_at(self.teleport_row,self.teleport_col, 'b')
+                else:
+                    markup.set_item_at(self.teleport_row, self.teleport_col, 'bf')
                 self.teleporting = False
                 print("teleport bomb done")
                 self.prop = 0
@@ -197,6 +203,23 @@ class Player(pygame.sprite.Sprite):
                            (self.teleport_col * 32 + 16, self.teleport_row * 32 + 16),
                            7,  # radius
                            0)  # filled
+class Indicator(pygame.sprite.Sprite):
+    def __init__(self, cha_surf, player):
+        pygame.sprite.Sprite.__init__(self)
+        self.loc_x = player.loc_x
+        self.loc_y = player.loc_y
+        self.hv = 32
+        self.vv = 32
+        self.image = pygame.Surface((18, 18))
+        self.image.set_colorkey((0, 0, 0))
+        self.image.blit(cha_surf, (0, 0), (0, 0, 50, 70))
+        self.rect = self.image.get_rect(center=(player.teleport_col, player.teleport_row))
+        self.col = (int)(player.teleport_col + 15.5) // 32 - 1
+        self.row = (int)(player.teleport_row + 15.5) // 32 - 1
+
+    def show_teleport(self, player):
+        self.rect = self.image.get_rect(center=(player.teleport_col, player.teleport_row))
+
 
 
 exitFlag0 = False
