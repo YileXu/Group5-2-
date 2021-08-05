@@ -200,14 +200,15 @@ class Player(pygame.sprite.Sprite):
     def show_teleport(self, indicator):
         indicator.col = self.teleport_col
         indicator.row = self.teleport_row
-        indicator.loc_x = self.loc_x
-        indicator.loc_y = self.loc_y
+        indicator.loc_x = (indicator.col + 1) * 32 - 15.5
+        indicator.loc_y = (indicator.row + 1) * 32 - 15.5
+        # print("teleport", indicator.loc_x, indicator.loc_y)
 
 class Indicator(pygame.sprite.Sprite):
     def __init__(self, cha_surf):
         pygame.sprite.Sprite.__init__(self)
-        self.col = 5
-        self.row = 5
+        self.col = -3
+        self.row = -3
         self.image = pygame.Surface((20, 20))
         self.image.set_colorkey((0, 0, 0))
         self.image.blit(cha_surf, (0, 0), (0, 0, 50, 70))
@@ -216,9 +217,15 @@ class Indicator(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 
     def show_rect(self):
+        # print("show_rect", self.loc_x, self.loc_y, self.rect)
         self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
-        print(self.col, self.row, self.loc_x, self.loc_y)
 
+    def directMoveViaColRow(self, col, row):
+        self.col = col
+        self.row = row
+        self.loc_x = (self.col + 1) * 32 - 15.5
+        self.loc_y = (self.row + 1) * 32 - 15.5
+        self.rect = self.image.get_rect(center=(self.loc_x, self.loc_y))
 
 exitFlag0 = False
 exitFlag1 = False

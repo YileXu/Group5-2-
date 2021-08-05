@@ -315,16 +315,14 @@ def main():
                     if player == player_zero:
                         player_zero.show_teleport(indicator_zero)
                         indicator_zero.show_rect()
-                        # print(player_zero.loc_x, player_zero.loc_y)
-                        print(indicator_zero.loc_x, indicator_zero.loc_y)
-
                     elif player == player_one:
                         player_one.show_teleport(indicator_one)
                         indicator_one.show_rect()
-                        print(player_one.teleport_col, player_one.teleport_row)
-
                 else:
-                    continue
+                    if player == player_zero:
+                        indicator_zero.directMoveViaColRow(-3, -3)
+                    elif player == player_one:
+                        indicator_one.directMoveViaColRow(-3, -3)
             if player_zero_auto_walk and markup.get_item_in(player_zero.row, player_zero.col) != 2:
                 player_zero_auto_walk = False
                 Character.exitFlag0 = True
@@ -364,10 +362,13 @@ def main():
 
             land_group.draw(surface)
             gadgets_group.draw(surface)
-            player_group.draw(surface)
+            
+            indicator_group.clear(surface, background)
+            indicator_group = pygame.sprite.Group()
+            indicator_group.add(indicator_zero, indicator_one)
             indicator_group.draw(surface)
-            for indicator in indicator_group:
-                print(indicator.rect, indicator.loc_x, indicator.loc_y)
+
+            player_group.draw(surface)
             pygame.display.flip()
         '''Game Loop'''
 
