@@ -21,7 +21,7 @@ class Player(pygame.sprite.Sprite):
         self.col = (int)(self.loc_x + 15.5) // 32 - 1
         self.row = (int)(self.loc_y + 15.5) // 32 - 1
 
-        self.prop = 4
+        self.prop = 0
         self.prev_col = self.col
         self.prev_row = self.row
         self.cross_privilege = False
